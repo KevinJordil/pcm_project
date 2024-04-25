@@ -1,27 +1,53 @@
-#  Copyright (c) 2012 Marcelo Pasin. All rights reserved.
-
-CFLAGS=-O3 -Wall --std=c++20
+CXX = g++
+CXXFLAGS = -O3 -Wall -std=c++20
 LDFLAGS=-O3 -lm
 
-all: main
+SRCS = main.cpp graph.hpp tspfile.hpp path.cpp task.cpp threads_params.cpp thread_worker.cpp
+OBJS = $(SRCS:.cpp=.o)
 
-main: main.o
-	c++ -o main $(LDFLAGS) main.o
+EXEC = main
 
-%.o: %.cpp %.hpp
-	c++ $(CFLAGS) -c $< -o $@
+all: $(EXEC) clean_o
 
-main: main.o path.o threads_params.o
-	c++ -o main $(LDFLAGS) main.o threads_params.o
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-testatom: testatom.cpp atomicstamped.hpp
-	g++ $(CFLAGS) -o testatom testatom.cpp
+$(EXEC): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $(EXEC) $(LDFLAGS)
 
-testque: testque.cpp queue.hpp
-	g++ $(CFLAGS) -o testque testque.cpp
-
-omp:
-	make main CFLAGS="-fopenmp -O3" LDFLAGS="-fopenmp -O3"
+clean_o:
+	rm -f *.o
 
 clean:
-	rm -f *.o main atomic testatom omp testque
+	rm -f $(OBJS) $(EXEC)
+
+
+
+#all: main clean_o
+#
+#main: main.o
+#	c++ -o main $(LDFLAGS) main.o
+#
+#%.o: %.cpp %.hpp
+#	c++ $(CFLAGS) -c $< -o $@
+#
+#path.o: path.cpp path.hpp
+#	c++ $(CFLAGS) -c path.cpp -o path.o
+#
+#main: main.o path.o threads_params.o
+#	c++ -o main $(LDFLAGS) main.o threads_params.o
+#
+#testatom: testatom.cpp atomicstamped.hpp
+#	g++ $(CFLAGS) -o testatom testatom.cpp
+#
+#testque: testque.cpp queue.hpp
+#	g++ $(CFLAGS) -o testque testque.cpp
+#
+#omp:
+#	make main CFLAGS="-fopenmp -O3" LDFLAGS="-fopenmp -O3"
+#
+#clean_o:
+#	rm -f *.o
+#
+#clean:
+#	rm -f *.o main atomic testatom omp testque

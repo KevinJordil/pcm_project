@@ -36,10 +36,17 @@ public:
      */
     std::vector<unsigned> get_path();
 
+    /**
+     * @brief Get the first city in the path
+     *
+     * @return unsigned
+     */
+    unsigned get_first_city();
+
 private:
+    unsigned **weights_matrix;
     unsigned path_weight;
     std::vector<unsigned> current_path;
-    unsigned **weights_matrix;
 };
 
 #endif //_path_hpp

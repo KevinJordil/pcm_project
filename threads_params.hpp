@@ -8,7 +8,7 @@
 class ThreadParams
 {
 public:
-    ThreadParams(uint64_t paths_left);
+    ThreadParams(uint64_t total_paths);
 
     /**
      * @brief Get the paths left
@@ -41,6 +41,7 @@ public:
 private:
     std::atomic<uint64_t *> paths_left;
     std::atomic<Path *> shortest_path;
+    const uint64_t TOTAL_PATHS;
 };
 
 #endif //_thread_params_hpp

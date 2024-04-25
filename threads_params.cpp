@@ -1,8 +1,8 @@
 #include "threads_params.hpp"
 
-ThreadParams::ThreadParams(uint64_t paths_left) : shortest_path(nullptr)
+ThreadParams::ThreadParams(uint64_t total_paths) : shortest_path(nullptr), TOTAL_PATHS(total_paths)
 {
-    this->paths_left = &paths_left;
+    this->paths_left = &total_paths;
 }
 
 uint64_t ThreadParams::get_paths_left()
@@ -19,12 +19,18 @@ void ThreadParams::update_shortest_path(Path &path)
 {
     Path *expected;
     Path *desired;
+    bool exit = false;
 
     do
     {
         expected = this->shortest_path.load();
         desired = &path;
-    } while (!this->shortest_path.compare_exchange_weak(expected, desired));
+
+        if (expected != nullptr && expected->get_weight() < path.get_weight())
+        {
+            exit = true;
+        }
+    } while (!exit && !this->shortest_path.compare_exchange_weak(expected, desired));
 }
 
 void ThreadParams::decrement_paths_left(uint64_t paths)

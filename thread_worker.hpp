@@ -8,6 +8,8 @@
 
 #include "threads_params.hpp"
 
+#define NUMBER_CITIES_ALONE 3
+
 class ThreadWorker
 {
 
@@ -43,17 +45,9 @@ public:
      */
     void add_task(Task &task);
 
-    /**
-     * @brief Update the global shortest path
-     *
-     * @param path Path to update
-     * @param weight Weight of the path
-     */
-    void update_shortest_path(std::vector<unsigned> &path, unsigned weight);
-
 private:
-    Task task;
     ThreadParams &params;
+    std::vector<Task> local_tasks;
 };
 
 #endif // _thread_worker_hpp

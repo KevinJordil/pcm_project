@@ -29,3 +29,13 @@ unsigned Path::get_weight()
 {
     return path_weight;
 }
+
+std::vector<unsigned> Path::get_path()
+{
+    return current_path;
+}
+
+unsigned Path::get_first_city()
+{
+    return current_path[0];
+}
