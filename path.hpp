@@ -1,103 +1,45 @@
-//
-//  path.hpp
-//  
-//  Copyright (c) 2022 Marcelo Pasin. All rights reserved.
-//
-
-#include <iostream>
-
 #ifndef _path_hpp
 #define _path_hpp
 
-#include "graph.hpp"
+#include <vector>
 
-class Path {
-private:
-	int _size;
-	int _distance;
-	int* _nodes;
-	Graph* _graph;
+class Path
+{
 public:
-	~Path()
-	{
-		clear();
-		delete[] _nodes;
-		_nodes = 0;
-		_graph = 0;
-	}
+    Path(unsigned **weights_matrix);
 
-	Path(Graph* graph)
-	{
-		_graph = graph;
-		_nodes = new int[max() + 1];
-		_distance = 0;
-		clear();
-	}
+    /**
+     * @brief Print the path
+     *
+     */
+    void print();
 
-	int max() const { return _graph->size(); }
-	int size() const { return _size; }
-	bool leaf() const { return (_size == max()); }
-	int distance() const { return _distance; }
-	void clear() { _size = _distance = 0; }
+    /**
+     * @brief Add a city to the path
+     *
+     * @param city City to add
+     * @return new path weight
+     */
+    unsigned add(unsigned city);
 
-	void add(int node)
-	{
-		if (_size <= max()) {
-			if (_size) {
-				int last = _nodes[_size - 1];
-				int distance = _graph->distance(last, node);
-				_distance += distance;
-			}
-			_nodes[_size ++] = node;
-		}
-	}
+    /**
+     * @brief Get the path weight
+     *
+     * @return unsigned
+     */
+    unsigned get_weight();
 
-	void pop()
-	{
-		if (_size) {
-			int last = _nodes[-- _size];
-			if (_size) {
-				int node = _nodes[_size - 1];
-				int distance = _graph->distance(node, last);
-				_distance -= distance;
-			}
-		}
-	}
+    /**
+     * @brief Get the path
+     *
+     * @return std::vector<unsigned>
+     */
+    std::vector<unsigned> get_path();
 
-	bool contains(int node) const
-	{
-		for (int i=0; i<_size; i++)
-			if (_nodes[i] == node)
-				return true;
-		return false;
-	}
-
-	void copy(Path* o)
-	{
-		if (max() != o->max()) {
-			delete[] _nodes;
-			_nodes = new int[o->max() + 1];
-		}
-		_graph = o->_graph;
-		_size = o->_size;
-		_distance = o->_distance;
-		for (int i=0; i<_size; i++)
-			_nodes[i] = o->_nodes[i];
-	}
-
-	void print(std::ostream& os) const
-	{
-		os << '[' << _distance;
-		for (int i=0; i<_size; i++)
-			os << (i?',':':') << ' ' << _nodes[i];
-		os << ']';
-	}
+private:
+    unsigned path_weight;
+    std::vector<unsigned> current_path;
+    unsigned **weights_matrix;
 };
 
-std::ostream& operator <<(std::ostream& os, Path* p)
-{
-	p->print(os);
-	return os;
-}
-
-#endif // _path_hpp
+#endif //_path_hpp
