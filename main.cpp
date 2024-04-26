@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "thread_worker.hpp"
-#include "graph.hpp"
 #include "tspfile.hpp"
 
 int main(int argc, char *argv[])
@@ -19,11 +18,9 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    Graph *g = TSPFile::graph(fname);
+    Graph *graph = TSPFile::graph(fname);
 
-    uint64_t paths = 10;
-
-    ThreadParams params(paths);
+    ThreadParams params(*graph);
 
     return EXIT_SUCCESS;
 }

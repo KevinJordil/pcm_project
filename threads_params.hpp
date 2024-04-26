@@ -2,13 +2,14 @@
 #define _thread_params_hpp
 
 #include "path.hpp"
+#include "graph.hpp"
 
 #include <atomic>
 
 class ThreadParams
 {
 public:
-    ThreadParams(uint64_t total_paths);
+    ThreadParams(Graph graph);
 
     /**
      * @brief Get the paths left
@@ -39,6 +40,7 @@ public:
     void decrement_paths_left(uint64_t paths);
 
 private:
+    Graph graph;
     std::atomic<uint64_t *> paths_left;
     std::atomic<Path *> shortest_path;
     const uint64_t TOTAL_PATHS;

@@ -1,8 +1,9 @@
 #include "threads_params.hpp"
 
-ThreadParams::ThreadParams(uint64_t total_paths) : shortest_path(nullptr), TOTAL_PATHS(total_paths)
+ThreadParams::ThreadParams(Graph graph) : graph(graph), shortest_path(nullptr), TOTAL_PATHS(graph.size())
 {
-    this->paths_left = &total_paths;
+    uint64_t paths_left = graph.size();
+    this->paths_left = &paths_left;
 }
 
 uint64_t ThreadParams::get_paths_left()

@@ -3,10 +3,12 @@
 
 #include <vector>
 
+#include "graph.hpp"
+
 class Path
 {
 public:
-    Path(unsigned **weights_matrix);
+    Path(Graph graph);
 
     /**
      * @brief Print the path
@@ -44,7 +46,7 @@ public:
     unsigned get_first_city();
 
 private:
-    unsigned **weights_matrix;
+    Graph graph;
     unsigned path_weight;
     std::vector<unsigned> current_path;
 };

@@ -4,11 +4,12 @@
 #include <vector>
 
 #include "path.hpp"
+#include "graph.hpp"
 
 class Task
 {
 public:
-    Task(unsigned **weights_matrix, std::vector<unsigned> cities_left);
+    Task(Graph graph, std::vector<unsigned> cities_left);
 
     /**
      * @brief Get the current path

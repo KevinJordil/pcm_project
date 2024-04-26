@@ -1,7 +1,7 @@
 #include "task.hpp"
 
-Task::Task(unsigned **weights_matrix, std::vector<unsigned> cities_left)
-    : current_path(Path(weights_matrix)), cities_left(cities_left)
+Task::Task(Graph graph, std::vector<unsigned> cities_left)
+    : current_path(Path(graph)), cities_left(cities_left)
 {
 }
 

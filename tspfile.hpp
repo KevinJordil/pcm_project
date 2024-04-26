@@ -7,15 +7,15 @@
 #ifndef _tspfile_hpp
 #define _tspfile_hpp
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 #include <cmath>
 #include <cerrno>
 #include <cstring>
 
 #include "graph.hpp"
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 class TSPFile
 {
