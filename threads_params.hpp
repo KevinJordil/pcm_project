@@ -30,7 +30,7 @@ public:
      *
      * @param path Path to update
      */
-    void update_shortest_path(Path &path);
+    void update_shortest_path(Path& path);
 
     /**
      * @brief Decrement the paths left
@@ -41,8 +41,8 @@ public:
 
 private:
     Graph graph;
-    std::atomic<uint64_t *> paths_left;
-    std::atomic<Path *> shortest_path;
+    std::atomic<uint64_t> paths_left;
+    std::atomic<Path*> shortest_path;
     const uint64_t TOTAL_PATHS;
 };
 

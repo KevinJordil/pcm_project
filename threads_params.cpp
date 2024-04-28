@@ -2,13 +2,14 @@
 
 ThreadParams::ThreadParams(Graph graph) : graph(graph), shortest_path(nullptr), TOTAL_PATHS(graph.size())
 {
+    //! Graph size != number of paths left!!
     uint64_t paths_left = graph.size();
-    this->paths_left = &paths_left;
+    this->paths_left = paths_left;
 }
 
 uint64_t ThreadParams::get_paths_left()
 {
-    return *this->paths_left;
+    return this->paths_left;
 }
 
 Path ThreadParams::get_shortest_path()
@@ -16,10 +17,10 @@ Path ThreadParams::get_shortest_path()
     return *this->shortest_path;
 }
 
-void ThreadParams::update_shortest_path(Path &path)
+void ThreadParams::update_shortest_path(Path& path)
 {
-    Path *expected;
-    Path *desired;
+    Path* expected;
+    Path* desired;
     bool exit = false;
 
     do
@@ -36,8 +37,8 @@ void ThreadParams::update_shortest_path(Path &path)
 
 void ThreadParams::decrement_paths_left(uint64_t paths)
 {
-    uint64_t *expected;
-    uint64_t *desired;
+    uint64_t expected;
+    uint64_t desired;
 
     do
     {
