@@ -21,18 +21,18 @@ void ThreadParams::update_shortest_path(Path& path)
 {
     Path* expected;
     Path* desired;
-    bool exit = false;
 
     do
     {
+        //? Are we sure that the memory stays allocated for long enough?
+        //? Smart pointers could help
         expected = this->shortest_path.load();
         desired = &path;
 
+        // Stop trying to update if a better path appeared
         if (expected != nullptr && expected->get_weight() < path.get_weight())
-        {
-            exit = true;
-        }
-    } while (!exit && !this->shortest_path.compare_exchange_weak(expected, desired));
+            break;
+    } while (!this->shortest_path.compare_exchange_weak(expected, desired));
 }
 
 void ThreadParams::decrement_paths_left(uint64_t paths)
