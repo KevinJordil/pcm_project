@@ -1,14 +1,15 @@
 #include "task.hpp"
 
-Task::Task(Graph graph, std::vector<unsigned> cities_left)
-    : current_path(Path(graph)), cities_left(cities_left)
+Task::Task(Path &path, std::vector<unsigned> cities_left)
+    : cities_left(cities_left)
 {
+    current_path = &path;
     std::cout << "Task created" << std::endl;
 }
 
 Path &Task::get_current_path()
 {
-    return current_path;
+    return *current_path;
 }
 
 unsigned Task::get_cities_left()
@@ -25,5 +26,5 @@ unsigned Task::extract_next_city_to_visit()
 
 unsigned Task::add_city_to_path(unsigned city)
 {
-    return current_path.add(city);
+    return current_path->add(city);
 }

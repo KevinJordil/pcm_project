@@ -1,14 +1,15 @@
 #include "threads_params.hpp"
 #include <cmath>
 
-ThreadParams::ThreadParams(Graph graph, Queue<Task> *queue) : graph(graph), shortest_path(nullptr), TOTAL_PATHS(graph.size())
+ThreadParams::ThreadParams(Graph *graph, Queue<Task> *queue) : shortest_path(nullptr), TOTAL_PATHS(graph->size())
 {
+    this->graph = graph;
     this->queue = queue;
-    if (graph.size() >= 20)
+    if (graph->size() >= 20)
         throw "Graphs must contain less than 20 edges";
 
     //! Graph size != number of paths left!!
-    uint64_t paths_left = tgamma(graph.size() + 1);
+    uint64_t paths_left = tgamma(graph->size() + 1);
     this->paths_left = paths_left;
 }
 

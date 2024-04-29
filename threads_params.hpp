@@ -11,7 +11,7 @@
 class ThreadParams
 {
 public:
-    ThreadParams(Graph graph, Queue<Task> *queue);
+    ThreadParams(Graph *graph, Queue<Task> *queue);
 
     /**
      * @brief Get the paths left
@@ -56,7 +56,7 @@ public:
     void add_task(Task &task);
 
 private:
-    Graph graph;
+    Graph *graph;
     std::atomic<uint64_t> paths_left;
     std::atomic<Path *> shortest_path;
     Queue<Task> *queue;

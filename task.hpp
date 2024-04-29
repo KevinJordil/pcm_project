@@ -9,7 +9,7 @@
 class Task
 {
 public:
-    Task(Graph graph, std::vector<unsigned> cities_left);
+    Task(Path &path, std::vector<unsigned> cities_left);
 
     /**
      * @brief Get the current path
@@ -41,7 +41,7 @@ public:
     unsigned add_city_to_path(unsigned city);
 
 private:
-    Path current_path;
+    Path *current_path;
     std::vector<unsigned> cities_left;
 };
 

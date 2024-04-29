@@ -28,30 +28,20 @@ int main(int argc, char *argv[])
     Queue<Task> queue;
     std::vector<unsigned> cities_left(graph->size());
     std::iota(cities_left.begin(), cities_left.end(), 0);
-    // Print state
-    std::cout << "Cities left: ";
     for (unsigned city : cities_left)
     {
         std::cout << city << " ";
     }
 
-    std::cout << "finish loop" << std::endl;
+    Path path(*graph);
 
-    Task *first_task = new Task(*graph, cities_left);
+    Task first_task(path, cities_left);
 
-    std::cout << "Task created" << std::endl;
+    queue.push(first_task);
 
-    queue.push(*first_task);
-
-    std::cout << "First task created" << std::endl;
-
-    ThreadParams params(*graph, &queue);
-
-    std::cout << "Params created" << std::endl;
+    ThreadParams params(graph, &queue);
 
     std::thread threads[NUMBER_THREADS];
-
-    std::cout << "Threads created" << std::endl;
 
     // Start the threads
     for (int i = 0; i < NUMBER_THREADS; i++)

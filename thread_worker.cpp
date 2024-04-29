@@ -21,6 +21,8 @@ void ThreadWorker::thread_work()
             //* Yes, that + batching tasks
         } while (current_task == nullptr && !should_stop());
 
+        std::cout << "Get task" << std::endl;
+
         if (should_stop())
         {
             break;
