@@ -72,7 +72,7 @@ public:
 		}
 	}
 
-	T &pop()
+	T pop()
 	{
 		uint64_t tailStamp, headStamp, nextStamp, stamp;
 

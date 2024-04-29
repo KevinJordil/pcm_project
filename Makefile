@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O3 -Wall -std=c++20
+CXXFLAGS = -O3 -Wall -std=c++20 -march=native
 LDFLAGS=-O3 -lm
 
 SRCS = main.cpp atomicstamped.cpp queue.cpp graph.cpp tspfile.cpp path.cpp task.cpp threads_params.cpp thread_worker.cpp

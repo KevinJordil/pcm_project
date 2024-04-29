@@ -53,7 +53,7 @@ void ThreadParams::decrement_paths_left(uint64_t paths)
     } while (!this->paths_left.compare_exchange_weak(expected, desired));
 }
 
-Task &ThreadParams::get_next_task()
+Task ThreadParams::get_next_task()
 {
     return this->queue->pop();
 }

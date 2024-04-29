@@ -46,7 +46,7 @@ public:
      *
      * @return Task
      */
-    Task &get_next_task();
+    Task get_next_task();
 
     /**
      * @brief Add a task to the queue

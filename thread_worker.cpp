@@ -97,7 +97,7 @@ Task &ThreadWorker::get_next_task()
     else
     {
         std::cout << "Try to get next task" << std::endl;
-        task = &params.get_next_task();
+        *task = params.get_next_task();
         std::cout << "Got next task" << std::endl;
     }
     return *task;
