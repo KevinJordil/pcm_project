@@ -7,8 +7,10 @@ ThreadWorker::ThreadWorker(ThreadParams &params)
 {
 }
 
-void ThreadWorker::thread_work(int id)
+void ThreadWorker::thread_work()
 {
+    // Print state
+    std::cout << "Thread started" << std::endl;
     while (!should_stop())
     {
         Task *current_task = nullptr;
@@ -17,7 +19,12 @@ void ThreadWorker::thread_work(int id)
             *current_task = get_next_task();
             //? Wait ?
             //* Yes, that + batching tasks
-        } while (current_task == nullptr);
+        } while (current_task == nullptr && !should_stop());
+
+        if (should_stop())
+        {
+            break;
+        }
 
         do
         {
@@ -84,12 +91,12 @@ Task &ThreadWorker::get_next_task()
     }
     else
     {
-        // TODO get task from queue
+        task = &params.get_next_task();
     }
     return *task;
 }
 
 void ThreadWorker::add_task(Task &task)
 {
-    // TODO
+    params.add_task(task);
 }

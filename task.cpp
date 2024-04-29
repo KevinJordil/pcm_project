@@ -3,6 +3,7 @@
 Task::Task(Graph graph, std::vector<unsigned> cities_left)
     : current_path(Path(graph)), cities_left(cities_left)
 {
+    std::cout << "Task created" << std::endl;
 }
 
 Path &Task::get_current_path()

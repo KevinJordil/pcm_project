@@ -19,9 +19,8 @@ public:
     /**
      * @brief Thread main function
      *
-     * @param id Id of the thread
      */
-    void thread_work(int id);
+    void thread_work();
 
     /**
      * @brief Indicates if the threads should stop

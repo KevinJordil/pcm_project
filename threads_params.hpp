@@ -3,13 +3,15 @@
 
 #include "path.hpp"
 #include "graph.hpp"
+#include "queue.hpp"
+#include "task.hpp"
 
 #include <atomic>
 
 class ThreadParams
 {
 public:
-    ThreadParams(Graph graph);
+    ThreadParams(Graph graph, Queue<Task> *queue);
 
     /**
      * @brief Get the paths left
@@ -30,7 +32,7 @@ public:
      *
      * @param path Path to update
      */
-    void update_shortest_path(Path& path);
+    void update_shortest_path(Path &path);
 
     /**
      * @brief Decrement the paths left
@@ -39,10 +41,25 @@ public:
      */
     void decrement_paths_left(uint64_t paths);
 
+    /**
+     * @brief Get the next task object
+     *
+     * @return Task
+     */
+    Task &get_next_task();
+
+    /**
+     * @brief Add a task to the queue
+     *
+     * @param task Task to add
+     */
+    void add_task(Task &task);
+
 private:
     Graph graph;
     std::atomic<uint64_t> paths_left;
-    std::atomic<Path*> shortest_path;
+    std::atomic<Path *> shortest_path;
+    Queue<Task> *queue;
     const uint64_t TOTAL_PATHS;
 };
 

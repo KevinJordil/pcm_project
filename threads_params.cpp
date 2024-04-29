@@ -1,8 +1,9 @@
 #include "threads_params.hpp"
 #include <cmath>
 
-ThreadParams::ThreadParams(Graph graph) : graph(graph), shortest_path(nullptr), TOTAL_PATHS(graph.size())
+ThreadParams::ThreadParams(Graph graph, Queue<Task> *queue) : graph(graph), shortest_path(nullptr), TOTAL_PATHS(graph.size())
 {
+    this->queue = queue;
     if (graph.size() >= 20)
         throw "Graphs must contain less than 20 edges";
 
@@ -21,10 +22,10 @@ Path ThreadParams::get_shortest_path()
     return *this->shortest_path;
 }
 
-void ThreadParams::update_shortest_path(Path& path)
+void ThreadParams::update_shortest_path(Path &path)
 {
-    Path* expected;
-    Path* desired;
+    Path *expected;
+    Path *desired;
 
     do
     {
@@ -49,4 +50,14 @@ void ThreadParams::decrement_paths_left(uint64_t paths)
         expected = this->paths_left.load();
         desired = expected - paths;
     } while (!this->paths_left.compare_exchange_weak(expected, desired));
+}
+
+Task &ThreadParams::get_next_task()
+{
+    return this->queue->pop();
+}
+
+void ThreadParams::add_task(Task &task)
+{
+    this->queue->push(task);
 }
