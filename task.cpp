@@ -6,6 +6,10 @@ Task::Task(Path &path, std::vector<unsigned> cities_left)
     current_path = &path;
 }
 
+Task::Task()
+{
+}
+
 Path &Task::get_current_path()
 {
     return *current_path;

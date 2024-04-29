@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -O3 -Wall -std=c++20
 LDFLAGS=-O3 -lm
 
-SRCS = main.cpp queue.cpp graph.cpp tspfile.cpp path.cpp task.cpp threads_params.cpp thread_worker.cpp
+SRCS = main.cpp atomicstamped.cpp queue.cpp graph.cpp tspfile.cpp path.cpp task.cpp threads_params.cpp thread_worker.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 EXEC = main

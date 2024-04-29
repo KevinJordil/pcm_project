@@ -1,138 +1,106 @@
-/*******************************************************************************
- MIT License
- Copyright (c) 2020 Orhan Kupusoglu
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-*******************************************************************************/
+//
+//  queue.hpp
+//
+//  Copyright (c) 2023 Marcelo Pasin. All rights reserved.
+//
 
-/*!
- * \mainpage ConcurrentQueue
- * \anchor ConcurrentQueue
- *
- * Based on the implementation by Anthony Williams
- * public domain
- * [Implementing a Thread-Safe Queue using Condition Variables (Updated)](https://www.justsoftwaresolutions.co.uk/threading/implementing-a-thread-safe-queue-using-condition-variables.html)
- * C++11
- * [std::queue](https://en.cppreference.com/w/cpp/container/queue)
- * [std::mutex](https://en.cppreference.com/w/cpp/thread/mutex)
- * [std::condition_variable](https://en.cppreference.com/w/cpp/thread/condition_variable)
- * [std::chrono::duration](https://en.cppreference.com/w/cpp/chrono/duration)
- */
+#include <iostream>
 
-#ifndef CONCURRENT_QUEUE_H
-#define CONCURRENT_QUEUE_H
+#ifndef _queue_hpp
+#define _queue_hpp
 
-#include <queue>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <chrono>
+#include "atomicstamped.hpp"
 
-template <typename T>
-class Queue
+class EmptyQueueException
 {
-public:
-    Queue() = default;                        // default constructor
-    Queue(const Queue &) = delete;            // copy constructor
-    Queue &operator=(const Queue &) = delete; // copy assignment
-    Queue(Queue &&) = delete;                 // move constructor
-    Queue &operator=(Queue &&) = delete;      // move assignment
-
-    void clear()
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        std::queue<T> blank;
-        std::swap(blank, _queue);
-    }
-
-    void push(T const &data)
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        _queue.push(data);
-        lock.unlock();
-        _condition.notify_one();
-    }
-
-    std::size_t size()
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        return _queue.size();
-    }
-
-    bool empty()
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        return _queue.empty();
-    }
-
-    bool try_pop(T &value)
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-
-        if (_queue.empty())
-        {
-            return false;
-        }
-
-        value = std::move(_queue.front());
-        _queue.pop();
-        return true;
-    }
-
-    T &pop()
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-
-        while (_queue.empty())
-        {
-            _condition.wait(lock);
-        }
-
-        T value = std::move(_queue.front());
-        _queue.pop();
-        return value;
-    }
-
-    bool wait_and_pop_while(T &value,
-                            std::chrono::milliseconds timeout_duration = std::chrono::seconds(1),
-                            const std::chrono::milliseconds &check_interval = std::chrono::milliseconds(10))
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-
-        while (_queue.empty())
-        {
-            if (_condition.wait_for(lock, check_interval) == std::cv_status::timeout)
-            {
-                timeout_duration -= check_interval;
-                if (timeout_duration <= std::chrono::milliseconds::zero())
-                {
-                    return false;
-                }
-            }
-        }
-
-        value = std::move(_queue.front());
-        _queue.pop();
-        return true;
-    }
-
 private:
-    std::queue<T> _queue;
-    std::mutex _mutex;
-    std::condition_variable _condition;
+	std::string _message;
+
+public:
+	EmptyQueueException(const std::string &msg) { this->_message = msg; }
+	std::string message() const { return _message; }
 };
 
-#endif
+template <class T>
+class Queue
+{
+private:
+	template <class U>
+	struct Node
+	{
+		U _value;
+		AtomicStamped<Node<U>> _nextref;
+		Node(U v) : _nextref(nullptr, 0) { this->_value = v; }
+	};
+
+	AtomicStamped<Node<T>> _headref;
+	AtomicStamped<Node<T>> _tailref;
+
+public:
+	Queue()
+	{
+		T value;
+		Node<T> *node = new Node<T>(value);
+		this->_headref.set(node, 0);
+		this->_tailref.set(node, 0);
+	}
+
+	void push(T value)
+	{
+		Node<T> *node = new Node<T>(value);
+		uint64_t tailStamp, nextStamp, stamp;
+
+		while (true)
+		{
+			Node<T> *tail = this->_tailref.get(tailStamp);
+			Node<T> *next = tail->_nextref.get(nextStamp);
+			if (tail == this->_tailref.get(stamp) && stamp == tailStamp)
+			{
+				if (next == nullptr)
+				{
+					if (tail->_nextref.cas(next, node, nextStamp, nextStamp + 1))
+					{
+						this->_tailref.cas(tail, node, tailStamp, tailStamp + 1);
+						return;
+					}
+				}
+				else
+				{
+					this->_tailref.cas(tail, next, tailStamp, tailStamp + 1);
+				}
+			}
+		}
+	}
+
+	T &pop()
+	{
+		uint64_t tailStamp, headStamp, nextStamp, stamp;
+
+		while (true)
+		{
+			Node<T> *head = this->_headref.get(headStamp);
+			Node<T> *tail = this->_tailref.get(tailStamp);
+			Node<T> *next = head->_nextref.get(nextStamp);
+			if (head == this->_headref.get(stamp) && stamp == headStamp)
+			{
+				if (head == tail)
+				{
+					if (next == nullptr)
+						throw(EmptyQueueException("Cannot dequeue from an empty queue."));
+					this->_tailref.cas(tail, next, tailStamp, tailStamp + 1);
+				}
+				else
+				{
+					T value = next->_value;
+					if (this->_headref.cas(head, next, headStamp, headStamp + 1))
+					{
+						delete head;
+						return value;
+					}
+				}
+			}
+		}
+	}
+};
+
+#endif // _queue_hpp
