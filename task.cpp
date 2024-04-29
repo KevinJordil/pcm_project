@@ -4,7 +4,6 @@ Task::Task(Path &path, std::vector<unsigned> cities_left)
     : cities_left(cities_left)
 {
     current_path = &path;
-    std::cout << "Task created" << std::endl;
 }
 
 Path &Task::get_current_path()

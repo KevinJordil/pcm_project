@@ -13,10 +13,13 @@ void ThreadWorker::thread_work()
     std::cout << "Thread started" << std::endl;
     while (!should_stop())
     {
+        std::cout << "while loop" << std::endl;
         Task *current_task = nullptr;
         do
         {
             *current_task = get_next_task();
+            // Display if current_task is null or not
+            std::cout << "Current task: " << current_task << std::endl;
             //? Wait ?
             //* Yes, that + batching tasks
         } while (current_task == nullptr && !should_stop());
@@ -93,7 +96,9 @@ Task &ThreadWorker::get_next_task()
     }
     else
     {
+        std::cout << "Try to get next task" << std::endl;
         task = &params.get_next_task();
+        std::cout << "Got next task" << std::endl;
     }
     return *task;
 }
