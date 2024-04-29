@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-ThreadWorker::ThreadWorker(ThreadParams& params)
+ThreadWorker::ThreadWorker(ThreadParams &params)
     : params(params)
 {
 }
@@ -11,7 +11,7 @@ void ThreadWorker::thread_work(int id)
 {
     while (!should_stop())
     {
-        Task* current_task = nullptr;
+        Task *current_task = nullptr;
         do
         {
             *current_task = get_next_task();
@@ -25,14 +25,6 @@ void ThreadWorker::thread_work(int id)
             //! The methods below modify the path and cities left in-place
             //! We are currently picking a single path and dropping all remaining others
             unsigned city = current_task->extract_next_city_to_visit();
-            unsigned weight = current_task->add_city_to_path(city);
-
-            if (weight >= params.get_shortest_path().get_weight())
-            {
-                // Remove the amount of paths that would be not calculated, factorial of the number of cities left
-                params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1));
-                break;
-            }
 
             // If the task has more than NUMBER_CITIES_ALONE cities left, put the task back in the queue
             if (current_task->get_cities_left() > NUMBER_CITIES_ALONE)
@@ -47,19 +39,32 @@ void ThreadWorker::thread_work(int id)
                 local_tasks.push_back(new_task);
             }
 
+            unsigned weight = current_task->add_city_to_path(city);
+
+            if (weight >= params.get_shortest_path().get_weight())
+            {
+                // Remove the amount of paths that would be not calculated, factorial of the number of cities left
+                params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1));
+                break;
+            }
+
         } while (current_task->get_cities_left() > 0);
 
-        // Calculate the return to the first city
-        unsigned first_city = current_task->get_current_path().get_first_city();
-        unsigned weight = current_task->add_city_to_path(first_city);
-
-        // The path is complete
-        params.decrement_paths_left(1);
-
-        // Check if the path is the shortest
-        if (weight < params.get_shortest_path().get_weight())
+        // Need to add this condition when we cut a branch and do a break
+        if (current_task->get_cities_left() == 0)
         {
-            params.update_shortest_path(current_task->get_current_path());
+            // Calculate the return to the first city
+            unsigned first_city = current_task->get_current_path().get_first_city();
+            unsigned weight = current_task->add_city_to_path(first_city);
+
+            // The path is complete
+            params.decrement_paths_left(1);
+
+            // Check if the path is the shortest
+            if (weight < params.get_shortest_path().get_weight())
+            {
+                params.update_shortest_path(current_task->get_current_path());
+            }
         }
     }
 }
@@ -69,9 +74,9 @@ bool ThreadWorker::should_stop()
     return params.get_paths_left() == 0;
 }
 
-Task& ThreadWorker::get_next_task()
+Task &ThreadWorker::get_next_task()
 {
-    Task* task = nullptr;
+    Task *task = nullptr;
     if (local_tasks.size() > 0)
     {
         task = &local_tasks.back();
@@ -84,7 +89,7 @@ Task& ThreadWorker::get_next_task()
     return *task;
 }
 
-void ThreadWorker::add_task(Task& task)
+void ThreadWorker::add_task(Task &task)
 {
     // TODO
 }
