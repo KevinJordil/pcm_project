@@ -8,7 +8,7 @@
 #include "tspfile.hpp"
 #include "queue.hpp"
 
-#define NUMBER_THREADS 2
+#define NUMBER_THREADS 1
 
 int main(int argc, char *argv[])
 {
