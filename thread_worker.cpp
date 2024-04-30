@@ -85,7 +85,11 @@ void ThreadWorker::thread_work()
             {
                 std::cout << "thread_worker: Update shortest path" << std::endl;
                 params.update_shortest_path(&current_task->get_current_path());
+            } else {
+                delete current_task;
             }
+        } else {
+            delete current_task;
         }
     }
 }
