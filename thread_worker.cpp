@@ -33,9 +33,6 @@ void ThreadWorker::thread_work()
         do
         {
             std::cout << "thread_worker: Do loop" << std::endl;
-            //! We are silently ignoring unexplored paths!!
-            //! The methods below modify the path and cities left in-place
-            //! We are currently picking a single path and dropping all remaining others
 
             unsigned city = current_task->extract_next_city_to_visit();
 
@@ -57,8 +54,8 @@ void ThreadWorker::thread_work()
                 std::cout << "thread_worker: PUSH task to local tasks" << std::endl;
             }
 
-            unsigned weight = current_task->add_city_to_path(city);
-            unsigned shortest_weight = params.get_shortest_path_weight();
+            __uint128_t weight = current_task->add_city_to_path(city);
+            __uint128_t shortest_weight = params.get_shortest_path_weight();
 
             // Print total paths left
             std::cout << "thread_worker: Paths left: " << params.get_paths_left() << std::endl;
@@ -66,8 +63,8 @@ void ThreadWorker::thread_work()
             if (weight >= shortest_weight)
             {
                 // Remove the amount of paths that would be not calculated, factorial of the number of cities left
-                std::cout << "thread_worker: Cut cities number:" << tgamma(current_task->get_cities_left() + 1) + 1 << std::endl;
-                params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1) + 1);
+                std::cout << "thread_worker: Cut cities number:" << tgamma(current_task->get_cities_left() + 1) << std::endl;
+                params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1));
                 break;
             }
 
@@ -78,7 +75,7 @@ void ThreadWorker::thread_work()
         {
             // Calculate the return to the first city
             unsigned first_city = 0;
-            unsigned weight = current_task->add_city_to_path(first_city);
+            __uint128_t weight = current_task->add_city_to_path(first_city);
 ;
             // The path is complete
             params.decrement_paths_left(1);
