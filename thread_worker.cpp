@@ -46,6 +46,7 @@ void ThreadWorker::thread_work()
                 Task *new_task = new Task();
                 *new_task = *current_task;
                 add_task(new_task);
+                std::cout << "thread_worker: PUSH task to queue" << std::endl;
             }
             else if (current_task->get_cities_left() > 0)
             {
@@ -53,6 +54,7 @@ void ThreadWorker::thread_work()
                 Task *new_task = new Task();
                 *new_task = *current_task;
                 local_tasks.push_back(new_task);
+                std::cout << "thread_worker: PUSH task to local tasks" << std::endl;
             }
 
             unsigned weight = current_task->add_city_to_path(city);
@@ -64,8 +66,8 @@ void ThreadWorker::thread_work()
             if (weight >= shortest_weight)
             {
                 // Remove the amount of paths that would be not calculated, factorial of the number of cities left
-                std::cout << "thread_worker: Cut cities number:" << tgamma(current_task->get_cities_left() + 1 + 1) << std::endl;
-                params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1));
+                std::cout << "thread_worker: Cut cities number:" << tgamma(current_task->get_cities_left() + 1) + 1 << std::endl;
+                params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1) + 1);
                 break;
             }
 

@@ -44,9 +44,9 @@ public:
      * @brief Add a city to the path
      *
      * @param unsigned City to add to the path
-     * @return unsigned The new path weight
+     * @return __uint128_t The new path weight
      */
-    unsigned add_city_to_path(unsigned city);
+    __uint128_t add_city_to_path(unsigned city);
 
 private:
     Path *current_path;

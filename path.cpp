@@ -25,7 +25,7 @@ unsigned Path::add(unsigned city)
     return path_weight;
 }
 
-uint64_t Path::get_weight() const
+__uint128_t Path::get_weight() const
 {
     return path_weight;
 }

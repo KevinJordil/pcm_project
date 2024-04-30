@@ -38,7 +38,7 @@ unsigned Task::extract_next_city_to_visit()
     return city;
 }
 
-unsigned Task::add_city_to_path(unsigned city)
+__uint128_t Task::add_city_to_path(unsigned city)
 {
     return current_path->add(city);
 }

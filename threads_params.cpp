@@ -9,7 +9,7 @@ ThreadParams::ThreadParams(Graph *graph, Queue<Task> *queue) : shortest_path(nul
         throw "Graphs must contain less than 20 edges";
 
     //! Graph size != number of paths left!!
-    uint64_t paths_left = tgamma(graph->size() + 1);
+    uint64_t paths_left = tgamma(graph->size());
     this->paths_left = paths_left;
 }
 
@@ -72,8 +72,6 @@ uint64_t ThreadParams::get_shortest_path_weight()
     Path *path = this->shortest_path.load();
     if (path == nullptr)
         return -1;
-
-    std::cout << "thread_params: Shortest path weight: " << path->get_weight() << std::endl;
 
     return path->get_weight();
 }

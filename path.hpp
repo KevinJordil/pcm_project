@@ -29,7 +29,7 @@ public:
      *
      * @return unsigned
      */
-    uint64_t get_weight() const;
+    __uint128_t get_weight() const;
 
     /**
      * @brief Get the path
@@ -47,7 +47,7 @@ public:
 
 private:
     Graph graph;
-    uint64_t path_weight;
+    __uint128_t path_weight;
     std::vector<unsigned> current_path;
 };
 

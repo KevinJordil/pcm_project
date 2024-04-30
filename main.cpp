@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
 
     // Print the shortest path
     Path shortest_path = params.get_shortest_path();
-    std::cout << "Shortest path: " << shortest_path.get_weight() << std::endl;
     std::cout << "Cities: ";
     for (unsigned city : shortest_path.get_path())
     {
