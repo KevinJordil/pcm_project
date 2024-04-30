@@ -32,7 +32,7 @@ public:
      *
      * @param path Path to update
      */
-    void update_shortest_path(Path &path);
+    void update_shortest_path(Path *path);
 
     /**
      * @brief Decrement the paths left

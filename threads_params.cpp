@@ -23,7 +23,7 @@ const Path &ThreadParams::get_shortest_path()
     return *this->shortest_path;
 }
 
-void ThreadParams::update_shortest_path(Path &path)
+void ThreadParams::update_shortest_path(Path *path)
 {
     Path *expected;
     Path *desired;
@@ -33,11 +33,13 @@ void ThreadParams::update_shortest_path(Path &path)
         //? Are we sure that the memory stays allocated for long enough?
         //? Smart pointers could help
         expected = this->shortest_path.load();
-        desired = &path;
+        desired = path;
 
         // Stop trying to update if a better path appeared
-        if (expected != nullptr && expected->get_weight() < path.get_weight())
+        if (expected != nullptr && expected->get_weight() < desired->get_weight())
             break;
+
+
     } while (!this->shortest_path.compare_exchange_weak(expected, desired));
 }
 
@@ -71,7 +73,7 @@ uint64_t ThreadParams::get_shortest_path_weight()
     if (path == nullptr)
         return -1;
 
-    std::cout << "Shortest path weight: " << path->get_weight() << std::endl;
+    std::cout << "thread_params: Shortest path weight: " << path->get_weight() << std::endl;
 
     return path->get_weight();
 }
