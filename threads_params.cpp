@@ -18,7 +18,7 @@ uint64_t ThreadParams::get_paths_left()
     return this->paths_left;
 }
 
-Path ThreadParams::get_shortest_path()
+const Path &ThreadParams::get_shortest_path()
 {
     return *this->shortest_path;
 }
@@ -53,12 +53,25 @@ void ThreadParams::decrement_paths_left(uint64_t paths)
     } while (!this->paths_left.compare_exchange_weak(expected, desired));
 }
 
-Task ThreadParams::get_next_task()
+Task *ThreadParams::get_next_task()
 {
-    return this->queue->pop();
+    Task *task = nullptr;
+    task = new Task(this->queue->pop());
+    return task;
 }
 
-void ThreadParams::add_task(Task &task)
+void ThreadParams::add_task(Task *task)
 {
-    this->queue->push(task);
+    this->queue->push(*task);
+}
+
+uint64_t ThreadParams::get_shortest_path_weight()
+{
+    Path *path = this->shortest_path.load();
+    if (path == nullptr)
+        return -1;
+
+    std::cout << "Shortest path weight: " << path->get_weight() << std::endl;
+
+    return path->get_weight();
 }

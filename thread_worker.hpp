@@ -35,18 +35,18 @@ public:
      *
      * @return Task&
      */
-    Task &get_next_task();
+    Task *get_next_task();
 
     /**
      * @brief Add a task to the queue
      *
      * @param task Task to add
      */
-    void add_task(Task &task);
+    void add_task(Task *task);
 
 private:
     ThreadParams &params;
-    std::vector<Task> local_tasks;
+    std::vector<Task*> local_tasks;
 };
 
 #endif // _thread_worker_hpp

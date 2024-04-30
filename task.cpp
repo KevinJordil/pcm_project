@@ -1,4 +1,5 @@
 #include "task.hpp"
+#include<algorithm>
 
 Task::Task(Path &path, std::vector<unsigned> cities_left)
     : cities_left(cities_left)
@@ -8,6 +9,16 @@ Task::Task(Path &path, std::vector<unsigned> cities_left)
 
 Task::Task()
 {
+}
+
+Task::Task(const Task &task)
+{
+    if (this != &task)
+    {
+        current_path = task.current_path;
+        // Copy vector
+        copy(task.cities_left.begin(), task.cities_left.end(), back_inserter(cities_left));
+    }
 }
 
 Path &Task::get_current_path()

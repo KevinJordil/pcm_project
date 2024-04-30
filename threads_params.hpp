@@ -25,7 +25,7 @@ public:
      *
      * @return Path
      */
-    Path get_shortest_path();
+    const Path &get_shortest_path();
 
     /**
      * @brief Update the shortest path
@@ -46,14 +46,21 @@ public:
      *
      * @return Task
      */
-    Task get_next_task();
+    Task *get_next_task();
 
     /**
      * @brief Add a task to the queue
      *
      * @param task Task to add
      */
-    void add_task(Task &task);
+    void add_task(Task *task);
+
+    /**
+    * @brief Get the weight of the shortest path
+    *
+    * @return uint64_t
+    */
+    uint64_t get_shortest_path_weight();
 
 private:
     Graph *graph;

@@ -29,7 +29,7 @@ public:
      *
      * @return unsigned
      */
-    unsigned get_weight();
+    unsigned get_weight() const;
 
     /**
      * @brief Get the path

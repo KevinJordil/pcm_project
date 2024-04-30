@@ -13,6 +13,13 @@ public:
     Task();
 
     /**
+    * @brief Copy constructor
+    *
+    * @param task Task to copy
+    */
+    Task(const Task &task);
+
+    /**
      * @brief Get the current path
      *
      * @return Path
