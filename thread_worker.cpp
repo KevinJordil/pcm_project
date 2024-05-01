@@ -16,7 +16,7 @@ void ThreadWorker::thread_work()
         std::cout << "thread_worker: while loop" << std::endl;
         Task* current_task = nullptr;
         unsigned fail_counter = 0;
-        unsigned constexpr FAIL_THRESHOLD = 256;
+        unsigned constexpr FAIL_THRESHOLD = 32;
 
         do
         {
@@ -109,6 +109,7 @@ bool ThreadWorker::should_stop()
 Task* ThreadWorker::get_next_task()
 {
     Task* task = nullptr;
+
     if (local_tasks.size() > 0)
     {
         std::cout << "thread_worker: Get next task from local tasks" << std::endl;
@@ -120,6 +121,7 @@ Task* ThreadWorker::get_next_task()
         std::cout << "thread_worker: Get next task from params" << std::endl;
         task = params.get_next_task();
     }
+
     return task;
 }
 

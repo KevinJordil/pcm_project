@@ -9,7 +9,7 @@
 class Task
 {
 public:
-    Task(Path &path, std::vector<unsigned> cities_left);
+    Task(Path& path, std::vector<unsigned> cities_left);
     Task();
 
     /**
@@ -17,14 +17,14 @@ public:
     *
     * @param task Task to copy
     */
-    Task(const Task &task);
+    Task(const Task& task);
 
     /**
      * @brief Get the current path
      *
      * @return Path
      */
-    Path &get_current_path();
+    Path& get_current_path();
 
     /**
      * @brief Get the number of cities left
@@ -49,7 +49,7 @@ public:
     __uint128_t add_city_to_path(unsigned city);
 
 private:
-    Path *current_path;
+    Path* current_path;
     std::vector<unsigned> cities_left;
 };
 
