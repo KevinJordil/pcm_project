@@ -15,15 +15,23 @@ void ThreadWorker::thread_work()
     {
         std::cout << "thread_worker: while loop" << std::endl;
         Task* current_task = nullptr;
+        unsigned fail_counter = 0;
+        unsigned constexpr FAIL_THRESHOLD = 256;
+
         do
         {
-            current_task = get_next_task();
+            try {
+                current_task = get_next_task();
+            }
+            catch (EmptyQueueException e) {
+                fail_counter++;
+            }
             // Display if current_task is null or not
             //? Wait ?
             //* Yes, that + batching tasks
-        } while (current_task == nullptr && !should_stop());
+        } while (current_task == nullptr && !should_stop() && fail_counter != FAIL_THRESHOLD);
 
-        if (should_stop())
+        if (should_stop() || fail_counter == FAIL_THRESHOLD)
         {
             break;
         }
@@ -65,7 +73,6 @@ void ThreadWorker::thread_work()
                 params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1));
                 break;
             }
-
         } while (current_task->get_cities_left() > 0);
 
         // Need to add this condition when we cut a branch and do a break
