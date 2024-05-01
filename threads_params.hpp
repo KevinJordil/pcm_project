@@ -11,7 +11,7 @@
 class ThreadParams
 {
 public:
-    ThreadParams(Graph *graph, Queue<Task> *queue);
+    ThreadParams(Graph* graph, Queue<Task*>* queue);
 
     /**
      * @brief Get the paths left
@@ -25,14 +25,14 @@ public:
      *
      * @return Path
      */
-    const Path &get_shortest_path();
+    const Path& get_shortest_path();
 
     /**
      * @brief Update the shortest path
      *
      * @param path Path to update
      */
-    void update_shortest_path(Path *path);
+    void update_shortest_path(Path* path);
 
     /**
      * @brief Decrement the paths left
@@ -46,14 +46,14 @@ public:
      *
      * @return Task
      */
-    Task *get_next_task();
+    Task* get_next_task();
 
     /**
      * @brief Add a task to the queue
      *
      * @param task Task to add
      */
-    void add_task(Task *task);
+    void add_task(Task* task);
 
     /**
     * @brief Get the weight of the shortest path
@@ -63,10 +63,10 @@ public:
     uint64_t get_shortest_path_weight();
 
 private:
-    Graph *graph;
+    Graph* graph;
     std::atomic<uint64_t> paths_left;
-    std::atomic<Path *> shortest_path;
-    Queue<Task> *queue;
+    std::atomic<Path*> shortest_path;
+    Queue<Task*>* queue;
     const uint64_t TOTAL_PATHS;
 };
 

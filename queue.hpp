@@ -17,7 +17,7 @@ private:
 	std::string _message;
 
 public:
-	EmptyQueueException(const std::string &msg) { this->_message = msg; }
+	EmptyQueueException(const std::string& msg) { this->_message = msg; }
 	std::string message() const { return _message; }
 };
 
@@ -39,21 +39,21 @@ private:
 public:
 	Queue()
 	{
-		T value;
-		Node<T> *node = new Node<T>(value);
+		T value = T();
+		Node<T>* node = new Node<T>(value);
 		this->_headref.set(node, 0);
 		this->_tailref.set(node, 0);
 	}
 
 	void push(T value)
 	{
-		Node<T> *node = new Node<T>(value);
+		Node<T>* node = new Node<T>(value);
 		uint64_t tailStamp, nextStamp, stamp;
 
 		while (true)
 		{
-			Node<T> *tail = this->_tailref.get(tailStamp);
-			Node<T> *next = tail->_nextref.get(nextStamp);
+			Node<T>* tail = this->_tailref.get(tailStamp);
+			Node<T>* next = tail->_nextref.get(nextStamp);
 			if (tail == this->_tailref.get(stamp) && stamp == tailStamp)
 			{
 				if (next == nullptr)
@@ -78,9 +78,9 @@ public:
 
 		while (true)
 		{
-			Node<T> *head = this->_headref.get(headStamp);
-			Node<T> *tail = this->_tailref.get(tailStamp);
-			Node<T> *next = head->_nextref.get(nextStamp);
+			Node<T>* head = this->_headref.get(headStamp);
+			Node<T>* tail = this->_tailref.get(tailStamp);
+			Node<T>* next = head->_nextref.get(nextStamp);
 			if (head == this->_headref.get(stamp) && stamp == headStamp)
 			{
 				if (head == tail)

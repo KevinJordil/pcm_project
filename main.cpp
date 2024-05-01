@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
     Graph* graph = TSPFile::graph(fname);
 
-    Queue<Task> queue;
+    Queue<Task*> queue;
     std::vector<unsigned> cities_left(graph->size());
     std::iota(cities_left.begin(), cities_left.end(), 0);
     for (unsigned city : cities_left)
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     }
 
     Path path(graph);
-    Task first_task(path, cities_left);
+    Task* first_task = new Task(path, cities_left);
     queue.push(first_task);
 
     ThreadParams params(graph, &queue);

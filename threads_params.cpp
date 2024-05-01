@@ -1,7 +1,7 @@
 #include "threads_params.hpp"
 #include <cmath>
 
-ThreadParams::ThreadParams(Graph *graph, Queue<Task> *queue) : shortest_path(nullptr), TOTAL_PATHS(graph->size())
+ThreadParams::ThreadParams(Graph* graph, Queue<Task*>* queue) : shortest_path(nullptr), TOTAL_PATHS(graph->size())
 {
     this->graph = graph;
     this->queue = queue;
@@ -18,15 +18,15 @@ uint64_t ThreadParams::get_paths_left()
     return this->paths_left;
 }
 
-const Path &ThreadParams::get_shortest_path()
+const Path& ThreadParams::get_shortest_path()
 {
     return *this->shortest_path;
 }
 
-void ThreadParams::update_shortest_path(Path *path)
+void ThreadParams::update_shortest_path(Path* path)
 {
-    Path *expected;
-    Path *desired;
+    Path* expected;
+    Path* desired;
 
     do
     {
@@ -55,21 +55,19 @@ void ThreadParams::decrement_paths_left(uint64_t paths)
     } while (!this->paths_left.compare_exchange_weak(expected, desired));
 }
 
-Task *ThreadParams::get_next_task()
+Task* ThreadParams::get_next_task()
 {
-    Task *task = nullptr;
-    task = new Task(this->queue->pop());
-    return task;
+    return this->queue->pop();
 }
 
-void ThreadParams::add_task(Task *task)
+void ThreadParams::add_task(Task* task)
 {
-    this->queue->push(*task);
+    this->queue->push(task);
 }
 
 uint64_t ThreadParams::get_shortest_path_weight()
 {
-    Path *path = this->shortest_path.load();
+    Path* path = this->shortest_path.load();
     if (path == nullptr)
         return -1;
 

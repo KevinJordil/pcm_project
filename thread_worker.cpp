@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-ThreadWorker::ThreadWorker(ThreadParams &params)
+ThreadWorker::ThreadWorker(ThreadParams& params)
     : params(params)
 {
 }
@@ -14,7 +14,7 @@ void ThreadWorker::thread_work()
     while (!should_stop())
     {
         std::cout << "thread_worker: while loop" << std::endl;
-        Task *current_task = nullptr;
+        Task* current_task = nullptr;
         do
         {
             current_task = get_next_task();
@@ -40,16 +40,14 @@ void ThreadWorker::thread_work()
             if (current_task->get_cities_left() > NUMBER_CITIES_ALONE)
             {
                 // Copy pointer value current_task to new_task
-                Task *new_task = new Task();
-                *new_task = *current_task;
+                Task* new_task = new Task(*current_task);
                 add_task(new_task);
                 std::cout << "thread_worker: PUSH task to queue" << std::endl;
             }
             else if (current_task->get_cities_left() > 0)
             {
                 // Using local_tasks is unnecessary overhead, we could run this iteratively
-                Task *new_task = new Task();
-                *new_task = *current_task;
+                Task* new_task = new Task(*current_task);
                 local_tasks.push_back(new_task);
                 std::cout << "thread_worker: PUSH task to local tasks" << std::endl;
             }
@@ -76,7 +74,7 @@ void ThreadWorker::thread_work()
             // Calculate the return to the first city
             unsigned first_city = 0;
             __uint128_t weight = current_task->add_city_to_path(first_city);
-;
+            ;
             // The path is complete
             params.decrement_paths_left(1);
 
@@ -85,10 +83,12 @@ void ThreadWorker::thread_work()
             {
                 std::cout << "thread_worker: Update shortest path" << std::endl;
                 params.update_shortest_path(&current_task->get_current_path());
-            } else {
+            }
+            else {
                 delete current_task;
             }
-        } else {
+        }
+        else {
             delete current_task;
         }
     }
@@ -99,9 +99,9 @@ bool ThreadWorker::should_stop()
     return params.get_paths_left() == 0;
 }
 
-Task *ThreadWorker::get_next_task()
+Task* ThreadWorker::get_next_task()
 {
-    Task *task = nullptr;
+    Task* task = nullptr;
     if (local_tasks.size() > 0)
     {
         std::cout << "thread_worker: Get next task from local tasks" << std::endl;
@@ -116,7 +116,7 @@ Task *ThreadWorker::get_next_task()
     return task;
 }
 
-void ThreadWorker::add_task(Task *task)
+void ThreadWorker::add_task(Task* task)
 {
     params.add_task(task);
 }
