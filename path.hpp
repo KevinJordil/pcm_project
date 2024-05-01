@@ -8,7 +8,7 @@
 class Path
 {
 public:
-    Path(Graph graph);
+    Path(Graph* graph);
 
     /**
      * @brief Print the path
@@ -46,7 +46,7 @@ public:
     unsigned get_first_city();
 
 private:
-    Graph graph;
+    Graph* graph;
     __uint128_t path_weight;
     std::vector<unsigned> current_path;
 };

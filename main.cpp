@@ -10,9 +10,9 @@
 
 #define NUMBER_THREADS 1
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    char *fname = 0;
+    char* fname = 0;
     if (argc == 2)
     {
         fname = argv[1];
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    Graph *graph = TSPFile::graph(fname);
+    Graph* graph = TSPFile::graph(fname);
 
     Queue<Task> queue;
     std::vector<unsigned> cities_left(graph->size());
@@ -33,14 +33,11 @@ int main(int argc, char *argv[])
         std::cout << city << " ";
     }
 
-    Path path(*graph);
-
+    Path path(graph);
     Task first_task(path, cities_left);
-
     queue.push(first_task);
 
     ThreadParams params(graph, &queue);
-
     std::thread threads[NUMBER_THREADS];
 
     // Start the threads
@@ -63,6 +60,9 @@ int main(int argc, char *argv[])
     {
         std::cout << city << " ";
     }
+
+    // Free resources
+    delete graph;
 
     return EXIT_SUCCESS;
 }

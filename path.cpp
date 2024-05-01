@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Path::Path(Graph graph) : graph(graph), path_weight(0)
+Path::Path(Graph* graph) : graph(graph), path_weight(0)
 {
 }
 
@@ -20,7 +20,7 @@ unsigned Path::add(unsigned city)
     current_path.push_back(city);
     if (current_path.size() > 1)
     {
-        path_weight += graph.distance(current_path[current_path.size() - 2], current_path[current_path.size() - 1]);
+        path_weight += graph->distance(current_path[current_path.size() - 2], current_path[current_path.size() - 1]);
     }
     return path_weight;
 }
