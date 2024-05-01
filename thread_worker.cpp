@@ -29,7 +29,7 @@ void ThreadWorker::thread_work()
             // Display if current_task is null or not
             //? Wait ?
             //* Yes, that + batching tasks
-        } while (current_task == nullptr && !should_stop() && fail_counter != FAIL_THRESHOLD);
+        } while ((current_task == nullptr && !should_stop()) || fail_counter <= FAIL_THRESHOLD);
 
         if (should_stop() || fail_counter == FAIL_THRESHOLD)
         {
