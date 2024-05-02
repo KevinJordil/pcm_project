@@ -29,10 +29,11 @@ void ThreadWorker::thread_work()
             // Display if current_task is null or not
             //? Wait ?
             //* Yes, that + batching tasks
-        } while ((current_task == nullptr && !should_stop()) || fail_counter <= FAIL_THRESHOLD);
+        } while ((current_task == nullptr && !should_stop()) && fail_counter <= FAIL_THRESHOLD);
 
         if (should_stop() || fail_counter == FAIL_THRESHOLD)
         {
+            std::cout << "thread_worker: Thread should stop" << std::endl;
             break;
         }
 
@@ -40,25 +41,40 @@ void ThreadWorker::thread_work()
 
         do
         {
-            std::cout << "thread_worker: Do loop" << std::endl;
+            if (current_task->get_cities_left() > 1) {
+                // For each city in cities left (ignore last city), create a new task and add it to the queue
+                for (unsigned i = 0; i < current_task->get_cities_left() - 1; i++)
+                {
+                    // Copy pointer value current_task to new_task
+                    Task* new_task = new Task(*current_task);
+                    unsigned next_city = new_task->extract_city_to_visit(i);
+                    __uint128_t weight = new_task->add_city_to_path(next_city);
+                    __uint128_t shortest_weight = params.get_shortest_path_weight();
 
-            unsigned city = current_task->extract_next_city_to_visit();
+                    if(weight < shortest_weight)
+                    {
+                        if(new_task->get_cities_left() > NUMBER_CITIES_ALONE){
+                            // Add the new task to the local tasks
+                            std::cout << "thread_worker: Add new task to local tasks" << std::endl;
+                            local_tasks.push_back(new_task);
+                        }
+                        else
+                        {
+                            // Add the new task to the queue
+                            std::cout << "thread_worker: Add new task to queue" << std::endl;
+                            add_task(new_task);
+                        }
+                    }
+                    else
+                    {
+                        std::cout << "thread_worker: Cut cities number:" << tgamma(new_task->get_cities_left() + 1) << std::endl;
+                        params.decrement_paths_left(tgamma(new_task->get_cities_left() + 1));
+                        delete new_task;
+                    }
+                }
+            }
 
-            // If the task has more than NUMBER_CITIES_ALONE cities left, put the task back in the queue
-            if (current_task->get_cities_left() > NUMBER_CITIES_ALONE)
-            {
-                // Copy pointer value current_task to new_task
-                Task* new_task = new Task(*current_task);
-                add_task(new_task);
-                std::cout << "thread_worker: PUSH task to queue" << std::endl;
-            }
-            else if (current_task->get_cities_left() > 0)
-            {
-                // Using local_tasks is unnecessary overhead, we could run this iteratively
-                Task* new_task = new Task(*current_task);
-                local_tasks.push_back(new_task);
-                std::cout << "thread_worker: PUSH task to local tasks" << std::endl;
-            }
+            unsigned city = current_task->extract_city_to_visit(current_task->get_cities_left() - 1); 
 
             __uint128_t weight = current_task->add_city_to_path(city);
             __uint128_t shortest_weight = params.get_shortest_path_weight();
@@ -66,7 +82,7 @@ void ThreadWorker::thread_work()
             // Print total paths left
             std::cout << "thread_worker: Paths left: " << params.get_paths_left() << std::endl;
 
-            if (weight >= shortest_weight)
+            if (weight >= shortest_weight && current_task->get_cities_left() > 0)
             {
                 // Remove the amount of paths that would be not calculated, factorial of the number of cities left
                 std::cout << "thread_worker: Cut cities number:" << tgamma(current_task->get_cities_left() + 1) << std::endl;
@@ -112,13 +128,13 @@ Task* ThreadWorker::get_next_task()
 
     if (local_tasks.size() > 0)
     {
-        std::cout << "thread_worker: Get next task from local tasks" << std::endl;
+        //std::cout << "thread_worker: Get next task from local tasks" << std::endl;
         task = local_tasks.back();
         local_tasks.pop_back();
     }
     else
     {
-        std::cout << "thread_worker: Get next task from params" << std::endl;
+        //std::cout << "thread_worker: Get next task from params" << std::endl;
         task = params.get_next_task();
     }
 

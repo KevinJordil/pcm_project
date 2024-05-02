@@ -38,6 +38,13 @@ unsigned Task::extract_next_city_to_visit()
     return city;
 }
 
+unsigned Task::extract_city_to_visit(unsigned city)
+{
+    unsigned return_city = cities_left[city];
+    cities_left.erase(cities_left.begin() + city);
+    return return_city;
+}
+
 __uint128_t Task::add_city_to_path(unsigned city)
 {
     return current_path->add(city);

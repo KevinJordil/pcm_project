@@ -41,6 +41,14 @@ public:
     unsigned extract_next_city_to_visit();
 
     /**
+    * @brief Extract specific city to visit
+    *
+    * @param unsigned City to extract
+    * @return unsigned
+    */
+    unsigned extract_city_to_visit(unsigned city);
+
+    /**
      * @brief Add a city to the path
      *
      * @param unsigned City to add to the path
