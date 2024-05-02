@@ -20,7 +20,7 @@ public:
      * @brief Thread main function
      *
      */
-    void thread_work();
+    void thread_work(int thread_id);
 
     /**
      * @brief Indicates if the threads should stop

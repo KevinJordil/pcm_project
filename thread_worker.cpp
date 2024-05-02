@@ -7,13 +7,13 @@ ThreadWorker::ThreadWorker(ThreadParams& params)
 {
 }
 
-void ThreadWorker::thread_work()
+void ThreadWorker::thread_work(int thread_id)
 {
     // Print state
-    std::cout << "thread_worker: Thread started" << std::endl;
+    //std::cout << "thread_worker: Thread " << thread_id << " started" << std::endl;
     while (!should_stop())
     {
-        std::cout << "thread_worker: while loop" << std::endl;
+        //std::cout << "thread_worker: while loop" << std::endl;
         Task* current_task = nullptr;
         unsigned fail_counter = 0;
         unsigned constexpr FAIL_THRESHOLD = 32;
@@ -31,13 +31,13 @@ void ThreadWorker::thread_work()
             //* Yes, that + batching tasks
         } while ((current_task == nullptr && !should_stop()) && fail_counter <= FAIL_THRESHOLD);
 
-        if (should_stop() || fail_counter == FAIL_THRESHOLD)
+        if (should_stop() || fail_counter >= FAIL_THRESHOLD || current_task == nullptr)
         {
-            std::cout << "thread_worker: Thread should stop" << std::endl;
+            //std::cout << "thread_worker: Thread should stop" << std::endl;
             break;
         }
 
-        std::cout << "thread_worker: thread have a new task" << std::endl;
+        //std::cout << "thread_worker: thread have a new task" << std::endl;
 
         do
         {
@@ -55,19 +55,19 @@ void ThreadWorker::thread_work()
                     {
                         if(new_task->get_cities_left() > NUMBER_CITIES_ALONE){
                             // Add the new task to the local tasks
-                            std::cout << "thread_worker: Add new task to local tasks" << std::endl;
+                            //std::cout << "thread_worker: Add new task to local tasks" << std::endl;
                             local_tasks.push_back(new_task);
                         }
                         else
                         {
                             // Add the new task to the queue
-                            std::cout << "thread_worker: Add new task to queue" << std::endl;
+                            //std::cout << "thread_worker: Add new task to queue" << std::endl;
                             add_task(new_task);
                         }
                     }
                     else
                     {
-                        std::cout << "thread_worker: Cut cities number:" << tgamma(new_task->get_cities_left() + 1) << std::endl;
+                        //std::cout << "thread_worker: Cut cities number:" << tgamma(new_task->get_cities_left() + 1) << std::endl;
                         params.decrement_paths_left(tgamma(new_task->get_cities_left() + 1));
                         delete new_task;
                     }
@@ -80,12 +80,12 @@ void ThreadWorker::thread_work()
             __uint128_t shortest_weight = params.get_shortest_path_weight();
 
             // Print total paths left
-            std::cout << "thread_worker: Paths left: " << params.get_paths_left() << std::endl;
+            //std::cout << "thread_worker: Paths left: " << params.get_paths_left() << std::endl;
 
             if (weight >= shortest_weight && current_task->get_cities_left() > 0)
             {
                 // Remove the amount of paths that would be not calculated, factorial of the number of cities left
-                std::cout << "thread_worker: Cut cities number:" << tgamma(current_task->get_cities_left() + 1) << std::endl;
+                //std::cout << "thread_worker: Cut cities number:" << tgamma(current_task->get_cities_left() + 1) << std::endl;
                 params.decrement_paths_left(tgamma(current_task->get_cities_left() + 1));
                 break;
             }
@@ -104,7 +104,7 @@ void ThreadWorker::thread_work()
             // Check if the path is the shortest
             if (weight < params.get_shortest_path_weight())
             {
-                std::cout << "thread_worker: Update shortest path" << std::endl;
+                //std::cout << "thread_worker: Update shortest path" << std::endl;
                 params.update_shortest_path(&current_task->get_current_path());
             }
             else {
