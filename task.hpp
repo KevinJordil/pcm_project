@@ -11,6 +11,7 @@ class Task
 public:
     Task(Path& path, std::vector<unsigned> cities_left);
     Task();
+    ~Task();
 
     /**
     * @brief Copy constructor

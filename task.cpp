@@ -21,6 +21,10 @@ Task::Task(const Task& task)
     }
 }
 
+Task::~Task() {
+    delete current_path;
+}
+
 Path& Task::get_current_path()
 {
     return *current_path;

@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O3 -Wall -std=c++20 -march=native -fsanitize=address -g -fno-omit-frame-pointer
+CXXFLAGS = -O2 -Wall -std=c++20 -march=native -fsanitize=address -g -fno-omit-frame-pointer
 LDFLAGS=-O3 -lm -latomic
 
 SRCS = main.cpp atomicstamped.cpp queue.cpp graph.cpp tspfile.cpp path.cpp task.cpp threads_params.cpp thread_worker.cpp

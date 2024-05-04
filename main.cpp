@@ -11,7 +11,7 @@
 #include "tspfile.hpp"
 #include "queue.hpp"
 
-#define NUMBER_THREADS 2
+#define NUMBER_THREADS 4
 #define P10_UINT64 10000000000000000000ULL   /* 19 zeroes */
 #define E10_UINT64 19
 #define STRINGIZER(x)   # x

@@ -30,7 +30,7 @@ private:
 	{
 		U _value;
 		AtomicStamped<Node<U>> _nextref;
-		Node(U v) : _nextref(nullptr, 0) { this->_value = v; }
+		Node(U v) : _value(v), _nextref(nullptr, 0) {}
 	};
 
 	AtomicStamped<Node<T>> _headref;
