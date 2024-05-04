@@ -51,9 +51,9 @@ void ThreadWorker::thread_work(int thread_id)
                     __uint128_t weight = new_task->add_city_to_path(next_city);
                     __uint128_t shortest_weight = params.get_shortest_path_weight();
 
-                    if(weight < shortest_weight)
+                    if (weight < shortest_weight)
                     {
-                        if(new_task->get_cities_left() > NUMBER_CITIES_ALONE){
+                        if (new_task->get_cities_left() > NUMBER_CITIES_ALONE) {
                             // Add the new task to the local tasks
                             //std::cout << "thread_worker: Add new task to local tasks" << std::endl;
                             local_tasks.push_back(new_task);
@@ -74,7 +74,7 @@ void ThreadWorker::thread_work(int thread_id)
                 }
             }
 
-            unsigned city = current_task->extract_city_to_visit(current_task->get_cities_left() - 1); 
+            unsigned city = current_task->extract_city_to_visit(current_task->get_cities_left() - 1);
 
             __uint128_t weight = current_task->add_city_to_path(city);
             __uint128_t shortest_weight = params.get_shortest_path_weight();

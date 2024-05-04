@@ -16,9 +16,9 @@ class Graph
 private:
 	int _max_size;
 	int _size;
-	int *_distances;
-	int *_x;
-	int *_y;
+	int* _distances;
+	int* _x;
+	int* _y;
 
 public:
 	Graph(int size)
@@ -35,16 +35,16 @@ public:
 
 	~Graph()
 	{
-		delete _x;
-		delete _y;
-		delete _distances;
+		delete[] _x;
+		delete[] _y;
+		delete[] _distances;
 		_x = _y = _distances = 0;
 		_max_size = 0;
 	}
 
 	int size() const { return _size; }
 	int distance(int i, int j) const { return _distances[i + _max_size * j]; }
-	int &sdistance(int i, int j) { return _distances[i + _max_size * j]; }
+	int& sdistance(int i, int j) { return _distances[i + _max_size * j]; }
 	int add(int x, int y)
 	{
 		_x[_size] = x;
@@ -52,7 +52,7 @@ public:
 		return _size++;
 	}
 
-	void print(std::ostream &os, bool all = true) const
+	void print(std::ostream& os, bool all = true) const
 	{
 		os << "     ";
 		for (int i = (all ? 0 : 1); i < _size; i++)

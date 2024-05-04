@@ -11,7 +11,7 @@
 #include "tspfile.hpp"
 #include "queue.hpp"
 
-#define NUMBER_THREADS 1
+#define NUMBER_THREADS 2
 #define P10_UINT64 10000000000000000000ULL   /* 19 zeroes */
 #define E10_UINT64 19
 #define STRINGIZER(x)   # x
@@ -22,7 +22,7 @@ static int print_u128_u(__uint128_t u128)
     int rc;
     if (u128 > UINT64_MAX)
     {
-        __uint128_t leading  = u128 / P10_UINT64;
+        __uint128_t leading = u128 / P10_UINT64;
         uint64_t  trailing = u128 % P10_UINT64;
         rc = print_u128_u(leading);
         rc += printf("%." TO_STRING(E10_UINT64) PRIu64, trailing);
@@ -61,15 +61,17 @@ int main(int argc, char* argv[])
     queue.push(first_task);
 
     ThreadParams params(graph, &queue);
-    std::thread threads[NUMBER_THREADS];
+    std::vector<ThreadWorker> thread_workers;
+    thread_workers.reserve(NUMBER_THREADS);
+    std::vector<std::thread> threads;
 
     auto start = std::chrono::high_resolution_clock::now();
 
     // Start the threads
     for (int i = 0; i < NUMBER_THREADS; i++)
     {
-        ThreadWorker thread_worker(params);
-        threads[i] = std::thread(&ThreadWorker::thread_work, &thread_worker, i);
+        thread_workers.push_back(ThreadWorker(params));
+        threads.push_back(std::thread(&ThreadWorker::thread_work, &thread_workers[i], i));
     }
 
     // Wait for the threads to finish
@@ -90,7 +92,7 @@ int main(int argc, char* argv[])
     {
         std::cout << city << ", ";
     }
-    std::cout << std::endl; 
+    std::cout << std::endl;
 
     std::cout << "Elapsed time: " << std::fixed << std::setprecision(2) << elapsed.count() << "s" << std::endl;
 
