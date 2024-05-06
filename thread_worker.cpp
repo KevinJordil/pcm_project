@@ -20,12 +20,7 @@ void ThreadWorker::thread_work(int thread_id)
 
         do
         {
-            try {
-                current_task = get_next_task();
-            }
-            catch (EmptyQueueException e) {
-                fail_counter++;
-            }
+            current_task = get_next_task();
             // Display if current_task is null or not
             //? Wait ?
             //* Yes, that + batching tasks

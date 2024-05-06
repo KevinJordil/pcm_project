@@ -3,7 +3,8 @@
 
 #include "path.hpp"
 #include "graph.hpp"
-#include "queue.hpp"
+#include "concurrentqueue.hpp"
+//#include "queue.hpp"
 #include "task.hpp"
 
 #include <atomic>
@@ -11,7 +12,7 @@
 class ThreadParams
 {
 public:
-    ThreadParams(Graph* graph, Queue<Task*>* queue);
+    ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Task*>* queue);
 
     /**
      * @brief Get the paths left
@@ -66,7 +67,7 @@ private:
     Graph* graph;
     std::atomic<uint64_t> paths_left;
     std::atomic<Path*> shortest_path;
-    Queue<Task*>* queue;
+    moodycamel::ConcurrentQueue<Task*>* queue;
     const uint64_t TOTAL_PATHS;
 };
 

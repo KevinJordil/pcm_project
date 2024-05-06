@@ -9,7 +9,8 @@
 
 #include "thread_worker.hpp"
 #include "tspfile.hpp"
-#include "queue.hpp"
+//#include "queue.hpp"
+#include "concurrentqueue.hpp"
 
 #define NUMBER_THREADS 4
 #define P10_UINT64 10000000000000000000ULL   /* 19 zeroes */
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
 
     Graph* graph = TSPFile::graph(fname);
 
-    Queue<Task*> queue;
+    moodycamel::ConcurrentQueue<Task*> queue;
     std::vector<unsigned> cities_left(graph->size() - 1);
     std::iota(cities_left.begin(), cities_left.end(), 1);
 

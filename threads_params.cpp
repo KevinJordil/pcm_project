@@ -1,7 +1,7 @@
 #include "threads_params.hpp"
 #include <cmath>
 
-ThreadParams::ThreadParams(Graph* graph, Queue<Task*>* queue) : shortest_path(nullptr), TOTAL_PATHS(graph->size())
+ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Task*>* queue) : shortest_path(nullptr), TOTAL_PATHS(graph->size())
 {
     this->graph = graph;
     this->queue = queue;
@@ -57,7 +57,9 @@ void ThreadParams::decrement_paths_left(uint64_t paths)
 
 Task* ThreadParams::get_next_task()
 {
-    return this->queue->pop();
+    Task* task = nullptr;
+    this->queue->try_pop(task);
+    return task;
 }
 
 void ThreadParams::add_task(Task* task)
