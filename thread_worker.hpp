@@ -8,7 +8,7 @@
 
 #include "threads_params.hpp"
 
-#define NUMBER_CITIES_ALONE 3
+#define NUMBER_CITIES_ALONE 8
 
 class ThreadWorker
 {
