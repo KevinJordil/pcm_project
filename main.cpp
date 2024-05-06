@@ -12,7 +12,6 @@
 //#include "queue.hpp"
 #include "concurrentqueue.hpp"
 
-#define NUMBER_THREADS 4
 #define P10_UINT64 10000000000000000000ULL   /* 19 zeroes */
 #define E10_UINT64 19
 #define STRINGIZER(x)   # x
@@ -39,13 +38,15 @@ static int print_u128_u(__uint128_t u128)
 int main(int argc, char* argv[])
 {
     char* fname = 0;
-    if (argc == 2)
+    int threads_number = 0;
+    if (argc == 3)
     {
         fname = argv[1];
+        threads_number = atoi(argv[2]);
     }
     else
     {
-        fprintf(stderr, "usage: %s filename\n", argv[0]);
+        fprintf(stderr, "usage: %s filename threads_number\n", argv[0]);
         exit(1);
     }
 
@@ -63,20 +64,20 @@ int main(int argc, char* argv[])
 
     ThreadParams params(graph, &queue);
     std::vector<ThreadWorker> thread_workers;
-    thread_workers.reserve(NUMBER_THREADS);
+    thread_workers.reserve(threads_number);
     std::vector<std::thread> threads;
 
     auto start = std::chrono::high_resolution_clock::now();
 
     // Start the threads
-    for (int i = 0; i < NUMBER_THREADS; i++)
+    for (int i = 0; i < threads_number; i++)
     {
         thread_workers.push_back(ThreadWorker(params));
         threads.push_back(std::thread(&ThreadWorker::thread_work, &thread_workers[i], i));
     }
 
     // Wait for the threads to finish
-    for (int i = 0; i < NUMBER_THREADS; i++)
+    for (int i = 0; i < threads_number; i++)
     {
         threads[i].join();
     }
