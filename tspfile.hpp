@@ -47,14 +47,14 @@ private:
 		exit(1);
 	}
 
-	static int sqdist(double x0, double y0, double x1, double y1)
+	static dist_t sqdist(double x0, double y0, double x1, double y1)
 	{
 		x0 -= x1;
 		y0 -= y1;
-		return (int)(.5 + sqrt(x0 * x0 + y0 * y0));
+		return (dist_t)(.5 + sqrt(x0 * x0 + y0 * y0));
 	}
 
-	static int lldist(double lo0, double la0, double lo1, double la1)
+	static dist_t lldist(double lo0, double la0, double lo1, double la1)
 	{
 		double RRR = 6378.388;
 		la0 = la0 * M_PI / 180.;
@@ -64,10 +64,10 @@ private:
 		double q1 = cos(lo0 - lo1);
 		double q2 = cos(la0 - la1);
 		double q3 = cos(la0 + la1);
-		return (int)(RRR * acos(((q1 + 1) * q2 - (q1 - 1) * q3) / 2) + .5);
+		return (dist_t)(RRR * acos(((q1 + 1) * q2 - (q1 - 1) * q3) / 2) + .5);
 	}
 
-	static int scan_size(char *line)
+	static int scan_size(char* line)
 	{
 		int size = 0;
 		line = trim_line(line, true);
@@ -79,7 +79,7 @@ private:
 		return size;
 	}
 
-	static Weight scan_weight(char *line)
+	static Weight scan_weight(char* line)
 	{
 		line = trim_line(line, true);
 		if (!strncmp("EUC_2D", line, 6))
@@ -93,7 +93,7 @@ private:
 		return EWT_ERR;
 	}
 
-	static Point scan_point(char *line, int i)
+	static Point scan_point(char* line, int i)
 	{
 		Point point;
 		int j;
@@ -104,9 +104,9 @@ private:
 		return point;
 	}
 
-	static char *trim_line(char *line, bool search_colon = false)
+	static char* trim_line(char* line, bool search_colon = false)
 	{
-		char *head = line;
+		char* head = line;
 
 		if (search_colon)
 		{
@@ -117,19 +117,19 @@ private:
 		}
 		while (*head && isspace(*head))
 			head++;
-		char *tail = head + strlen(head) - 1;
+		char* tail = head + strlen(head) - 1;
 		while (tail >= head && isspace(*tail))
 			*tail-- = 0;
 		return head;
 	}
 
 public:
-	static Graph *graph(std::string fname)
+	static Graph* graph(std::string fname)
 	{
-		FILE *f;
+		FILE* f;
 		int size = 0;
 		char line[MAX_CHARS_LINE];
-		char *tline;
+		char* tline;
 		Point vec[MAX_NODES];
 		Weight ewt = EWT_EUC_2D;
 
@@ -167,14 +167,14 @@ public:
 		}
 		fclose(f);
 
-		Graph *g = new Graph(size);
+		Graph* g = new Graph(size);
 		for (int i = 0; i < size; i++)
 		{
 			g->add(vec[i].x, vec[i].y);
 			g->sdistance(i, i) = 0;
 			for (int j = 0; j < i; j++)
 			{
-				int dist = 0;
+				dist_t dist = 0;
 				switch (ewt)
 				{
 				case EWT_GEO:

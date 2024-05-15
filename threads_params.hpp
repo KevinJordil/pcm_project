@@ -4,71 +4,76 @@
 #include "path.hpp"
 #include "graph.hpp"
 #include "concurrentqueue.hpp"
-//#include "queue.hpp"
-#include "task.hpp"
 
 #include <atomic>
 
 class ThreadParams
 {
 public:
-    ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Task*>* queue);
+    ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue);
 
     /**
      * @brief Get the paths left
      *
-     * @return uint64_t
+     * @return size_t
      */
-    uint64_t get_paths_left();
+    size_t get_paths_left();
 
     /**
      * @brief Get the shortest path
      *
      * @return Path
      */
-    const Path& get_shortest_path();
+    Path* get_shortest_path();
 
     /**
-     * @brief Update the shortest path
+     * @brief Set the shortest path
      *
      * @param path Path to update
      */
-    void update_shortest_path(Path* path);
+    void set_shortest_path(Path* path);
 
     /**
      * @brief Decrement the paths left
      *
      * @param paths Number of paths to decrement
      */
-    void decrement_paths_left(uint64_t paths);
+    void decrement_paths_left(size_t paths);
 
     /**
-     * @brief Get the next task object
+     * @brief Get the next path object to explore
      *
-     * @return Task
+     * @return Path
      */
-    Task* get_next_task();
+    Path* fetch_branch();
 
     /**
-     * @brief Add a task to the queue
+     * @brief Add a path to the queue
      *
-     * @param task Task to add
+     * @param path Path to adds
      */
-    void add_task(Task* task);
+    void publish_branch(Path* path);
 
     /**
     * @brief Get the weight of the shortest path
     *
-    * @return uint64_t
+    * @return dist_t
     */
-    uint64_t get_shortest_path_weight();
+    dist_t shortest_distance();
+
+    /**
+    * @brief Get the size of the graph
+    *
+    * @return size_t
+    */
+    size_t number_of_nodes();
 
 private:
     Graph* graph;
-    std::atomic<uint64_t> paths_left;
+    std::atomic<size_t> paths_left;
     std::atomic<Path*> shortest_path;
-    moodycamel::ConcurrentQueue<Task*>* queue;
-    const uint64_t TOTAL_PATHS;
+    moodycamel::ConcurrentQueue<Path*>* queue;
+    const size_t TOTAL_PATHS;
 };
 
 #endif //_thread_params_hpp

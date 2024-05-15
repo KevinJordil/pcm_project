@@ -1,9 +1,9 @@
 CXX = g++
-#CXXFLAGS = -O2 -Wall -std=c++20 -march=native -fsanitize=address -g -fno-omit-frame-pointer
-CXXFLAGS = -O2 -Wall -std=c++20 -march=native
+#CXXFLAGS = -O3 -Wall -std=c++20 -march=native -fsanitize=address -g -fno-omit-frame-pointer
+CXXFLAGS = -O3 -Wall -std=c++20 -march=native
 LDFLAGS=-O3 -lm -latomic
 
-SRCS = main.cpp concurrentqueue.hpp atomicstamped.cpp queue.cpp graph.cpp tspfile.cpp path.cpp task.cpp threads_params.cpp thread_worker.cpp
+SRCS = main.cpp atomicstamped.cpp queue.cpp graph.cpp tspfile.cpp threads_params.cpp thread_worker.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 EXEC = main

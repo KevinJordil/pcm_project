@@ -10,26 +10,27 @@
 #include <iostream>
 #include <iomanip>
 #include <stdio.h>
+#include "settings.hpp"
 
 class Graph
 {
 private:
-	int _max_size;
-	int _size;
-	int* _distances;
-	int* _x;
-	int* _y;
+	size_t _max_size;
+	size_t _size;
+	dist_t* _distances;
+	size_t* _x;
+	size_t* _y;
 
 public:
-	Graph(int size)
+	Graph(size_t size)
 	{
 		_max_size = size;
-		_distances = new int[size * size];
-		for (int i = 0; i < size; i++)
-			for (int j = 0; j < size; j++)
+		_distances = new size_t[size * size];
+		for (size_t i = 0; i < size; i++)
+			for (size_t j = 0; j < size; j++)
 				sdistance(i, j) = -1;
-		_x = new int[size];
-		_y = new int[size];
+		_x = new size_t[size];
+		_y = new size_t[size];
 		_size = 0;
 	}
 
@@ -42,10 +43,10 @@ public:
 		_max_size = 0;
 	}
 
-	int size() const { return _size; }
-	int distance(int i, int j) const { return _distances[i + _max_size * j]; }
-	int& sdistance(int i, int j) { return _distances[i + _max_size * j]; }
-	int add(int x, int y)
+	size_t size() const { return _size; }
+	dist_t distance(node_t i, node_t j) const { return _distances[i + _max_size * j]; }
+	dist_t& sdistance(node_t i, node_t j) { return _distances[i + _max_size * j]; }
+	size_t add(int x, int y)
 	{
 		_x[_size] = x;
 		_y[_size] = y;
@@ -55,23 +56,23 @@ public:
 	void print(std::ostream& os, bool all = true) const
 	{
 		os << "     ";
-		for (int i = (all ? 0 : 1); i < _size; i++)
+		for (size_t i = (all ? 0 : 1); i < _size; i++)
 		{
 			char fmt[10];
-			snprintf(fmt, 8, "%5d", i);
+			snprintf(fmt, 8, "%5ld", i);
 			os << fmt;
 		}
 		os << '\n';
-		for (int i = 0; i < (_size - (all ? 0 : 1)); i++)
+		for (size_t i = 0; i < (_size - (all ? 0 : 1)); i++)
 		{
 			char fmt[10];
-			snprintf(fmt, 8, "%5d", i);
+			snprintf(fmt, 8, "%5ld", i);
 			os << fmt;
-			for (int j = 0; j < (all ? 0 : i); j++)
+			for (size_t j = 0; j < (all ? 0 : i); j++)
 				os << "   ..";
-			for (int j = (all ? 0 : i + 1); j < _size; j++)
+			for (size_t j = (all ? 0 : i + 1); j < _size; j++)
 			{
-				snprintf(fmt, 8, "%5d", distance(i, j));
+				snprintf(fmt, 8, "%5ld", distance(i, j));
 				os << fmt;
 			}
 			os << '\n';
