@@ -6,10 +6,7 @@
 
 using namespace std::literals::chrono_literals;
 
-
-ThreadWorker::ThreadWorker(ThreadParams* params) : params(params) {}
-
-void ThreadWorker::thread_work() {
+void tsp_worker(ThreadParams* params) {
     while (true) {
         Path* branch = nullptr;
 
@@ -17,7 +14,7 @@ void ThreadWorker::thread_work() {
             branch = params->fetch_branch();
 
             // When everything is done, simply stop the thread
-            if (computation_done()) return;
+            if (params->get_paths_left() == 0) return;
 
             // Reduce the load on the queue when empty
             if (!branch) std::this_thread::sleep_for(100us);
@@ -48,8 +45,4 @@ void ThreadWorker::thread_work() {
             }
         }
     }
-}
-
-bool ThreadWorker::computation_done() {
-    return params->get_paths_left() == 0;
 }

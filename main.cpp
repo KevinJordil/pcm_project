@@ -37,17 +37,13 @@ int main(int argc, char* argv[])
     queue.push(path);
 
     ThreadParams params(graph, &queue);
-    std::vector<ThreadWorker> workers;
     std::vector<std::thread> threads;
-    workers.reserve(threads_number);
     threads.reserve(threads_number);
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < threads_number; i++) {
-        workers.emplace_back(&params);
-        threads.push_back(std::thread(&ThreadWorker::thread_work, &workers[i]));
-    }
+    for (int i = 0; i < threads_number; i++)
+        threads.emplace_back(tsp_worker, &params);
 
     for (int i = 0; i < threads_number; i++)
         threads[i].join();
