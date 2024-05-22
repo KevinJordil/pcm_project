@@ -12,7 +12,6 @@ void sequential_bnb(Path* current, Path* shortest, dist_t* shortest_distance);
 void tsp_worker(ThreadParams* params) {
     while (true) {
         Path* branch = nullptr;
-        unsigned deadlock_detector = 0;
 
         do {
             branch = params->fetch_branch();
@@ -22,9 +21,6 @@ void tsp_worker(ThreadParams* params) {
 
             // Reduce the load on the queue when empty
             if (!branch) std::this_thread::sleep_for(100us);
-
-            if (deadlock_detector++ == 32)
-                std::cout << "Deadlocked! paths left: " << params->get_paths_left() << std::endl;
         } while (!branch);
 
         // Branch is deep enough to traverse sequentially
@@ -36,8 +32,8 @@ void tsp_worker(ThreadParams* params) {
             if (local_shortest_distance < params->shortest_distance())
                 // TODO: Fix memory leak of old shortest 
                 params->set_shortest_path(new Path(local_shortest));
-            
-            params->decrement_paths_left(factorial(TSP_SEQUENTIAL_DEPTH));
+
+            params->decrement_paths_left(factorial(branch->max() - branch->size()));
         }
 
         // Otherwise, create sub-branches for other threads to explore later
@@ -61,28 +57,28 @@ void tsp_worker(ThreadParams* params) {
 }
 
 void sequential_bnb(Path* current, Path* shortest, dist_t* shortest_distance) {
-	if (current->leaf()) {
-		// this is a leaf
-		current->add(0);
-		if (current->distance() < *shortest_distance) {
-			*shortest = *current;
+    if (current->leaf()) {
+        // this is a leaf
+        current->add(0);
+        if (current->distance() < *shortest_distance) {
+            *shortest = *current;
             *shortest_distance = shortest->distance();
         }
-		current->pop();
-	} 
+        current->pop();
+    }
     else {
-		if (current->distance() < *shortest_distance) {
-			// continue branching
-			for (node_t i = 1; i < current->max(); i++) {
-				if (!current->contains(i)) {
-					current->add(i);
-					sequential_bnb(current, shortest, shortest_distance);
-					current->pop();
-				}
-			}
-		}
+        if (current->distance() < *shortest_distance) {
+            // continue branching
+            for (node_t i = 1; i < current->max(); i++) {
+                if (!current->contains(i)) {
+                    current->add(i);
+                    sequential_bnb(current, shortest, shortest_distance);
+                    current->pop();
+                }
+            }
+        }
         else {
             // current already >= shortest known so far, bound
         }
-	}
+    }
 }
