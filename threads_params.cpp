@@ -2,15 +2,16 @@
 
 #include "threads_params.hpp"
 #include "settings.hpp"
+#include "tools.hpp"
 
-ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue) : shortest_path(nullptr), TOTAL_PATHS(graph->size())
+ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue) : shortest_path(nullptr), TOTAL_PATHS(factorial(graph->size() - 1))
 {
     this->graph = graph;
     this->queue = queue;
     if (graph->size() >= TSP_MAX_NODES)
         throw "Graphs must contain less than 20 edges";
 
-    size_t paths_left = tgamma(graph->size());
+    size_t paths_left = factorial(graph->size() - 1);
     this->paths_left = paths_left;
 }
 
@@ -33,10 +34,7 @@ void ThreadParams::set_shortest_path(Path* path) {
         desired = path;
 
         // Stop trying to update if a better path appeared
-        if (expected != nullptr && expected->distance() < desired->distance())
-            break;
-
-
+        if (expected != nullptr && expected->distance() < desired->distance()) break;
     } while (!this->shortest_path.compare_exchange_weak(expected, desired));
 }
 

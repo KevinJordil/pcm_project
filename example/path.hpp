@@ -13,60 +13,60 @@
 
 class Path {
 private:
-	int size;
-	int distance;
+	int _size;
+	int _distance;
 	int* _nodes;
-	Graph* graph;
+	Graph* _graph;
 public:
 	~Path()
 	{
 		clear();
 		delete[] _nodes;
 		_nodes = 0;
-		graph = 0;
+		_graph = 0;
 	}
 
 	Path(Graph* graph)
 	{
-		graph = graph;
+		_graph = graph;
 		_nodes = new int[max() + 1];
-		distance = 0;
+		_distance = 0;
 		clear();
 	}
 
-	int max() const { return graph->size(); }
-	int size() const { return size; }
-	bool leaf() const { return (size == max()); }
-	int distance() const { return distance; }
-	void clear() { size = distance = 0; }
+	int max() const { return _graph->size(); }
+	int size() const { return _size; }
+	bool leaf() const { return (_size == max()); }
+	int distance() const { return _distance; }
+	void clear() { _size = _distance = 0; }
 
 	void add(int node)
 	{
-		if (size <= max()) {
-			if (size) {
-				int last = _nodes[size - 1];
-				int distance = graph->distance(last, node);
-				distance += distance;
+		if (_size <= max()) {
+			if (_size) {
+				int last = _nodes[_size - 1];
+				int distance = _graph->distance(last, node);
+				_distance += distance;
 			}
-			_nodes[size++] = node;
+			_nodes[_size ++] = node;
 		}
 	}
 
 	void pop()
 	{
-		if (size) {
-			int last = _nodes[--size];
-			if (size) {
-				int node = _nodes[size - 1];
-				int distance = graph->distance(node, last);
-				distance -= distance;
+		if (_size) {
+			int last = _nodes[-- _size];
+			if (_size) {
+				int node = _nodes[_size - 1];
+				int distance = _graph->distance(node, last);
+				_distance -= distance;
 			}
 		}
 	}
 
 	bool contains(int node) const
 	{
-		for (int i = 0; i < size; i++)
+		for (int i=0; i<_size; i++)
 			if (_nodes[i] == node)
 				return true;
 		return false;
@@ -78,18 +78,18 @@ public:
 			delete[] _nodes;
 			_nodes = new int[o->max() + 1];
 		}
-		graph = o->graph;
-		size = o->size;
-		distance = o->distance;
-		for (int i = 0; i < size; i++)
+		_graph = o->_graph;
+		_size = o->_size;
+		_distance = o->_distance;
+		for (int i=0; i<_size; i++)
 			_nodes[i] = o->_nodes[i];
 	}
 
 	void print(std::ostream& os) const
 	{
-		os << '[' << distance;
-		for (int i = 0; i < size; i++)
-			os << (i ? ',' : ':') << ' ' << _nodes[i];
+		os << '[' << _distance;
+		for (int i=0; i<_size; i++)
+			os << (i?',':':') << ' ' << _nodes[i];
 		os << ']';
 	}
 };

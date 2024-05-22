@@ -4,31 +4,23 @@
 //  Copyright (c) 2022 Marcelo Pasin. All rights reserved.
 //
 
-#ifndef _tspfile_hpp
-#define _tspfile_hpp
+#ifndef  _tspfile_hpp
+#define  _tspfile_hpp
 
-#include <cmath>
+#include <math.h>
 #include <cerrno>
 #include <cstring>
 
 #include "graph.hpp"
 
-class TSPFile
-{
+
+class TSPFile {
 private:
 	static const int MAX_NODES = 100;
 	static const int MAX_CHARS_LINE = 1000;
 
-	enum Weight
-	{
-		EWT_EUC_2D = 1,
-		EWT_GEO,
-		EWT_ERR
-	};
-	struct Point
-	{
-		double x, y;
-	};
+	enum Weight { EWT_EUC_2D = 1, EWT_GEO, EWT_ERR };
+	struct Point { double x, y; };
 	static int _linenum;
 	static std::string _filename;
 
@@ -47,7 +39,7 @@ private:
 	{
 		x0 -= x1;
 		y0 -= y1;
-		return (int)(.5 + sqrt(x0 * x0 + y0 * y0));
+		return (int) (.5 + sqrt(x0*x0 + y0*y0));
 	}
 
 	static int lldist(double lo0, double la0, double lo1, double la1)
@@ -60,10 +52,10 @@ private:
 		double q1 = cos(lo0 - lo1);
 		double q2 = cos(la0 - la1);
 		double q3 = cos(la0 + la1);
-		return (int)(RRR * acos(((q1 + 1) * q2 - (q1 - 1) * q3) / 2) + .5);
+		return (int) (RRR * acos( ( (q1+1)*q2 - (q1-1)*q3 ) /2 ) + .5);
 	}
 
-	static int scan_size(char *line)
+	static int scan_size(char* line)
 	{
 		int size = 0;
 		line = trim_line(line, true);
@@ -72,63 +64,59 @@ private:
 			abort("too many points in input");
 		if (size < 1)
 			abort("wrong size in input");
-		return size;
+		return size;		
 	}
 
-	static Weight scan_weight(char *line)
+	static Weight scan_weight(char* line)
 	{
 		line = trim_line(line, true);
-		if (!strncmp("EUC_2D", line, 6))
-		{
+		if (!strncmp("EUC_2D", line, 6)) {
 			return EWT_EUC_2D;
-		}
-		else if (!strncmp("GEO", line, 3))
-		{
+		} else if (!strncmp("GEO", line, 3)) {
 			return EWT_GEO;
 		}
 		return EWT_ERR;
 	}
 
-	static Point scan_point(char *line, int i)
+	static Point scan_point(char* line, int i)
 	{
 		Point point;
 		int j;
 		if (sscanf(line, "%d %lf %lf", &j, &point.x, &point.y) != 3)
 			abort("missing data in input file");
-		if (i != (j - 1))
+		if (i != (j-1))
 			abort("wrong data in input file");
 		return point;
 	}
 
-	static char *trim_line(char *line, bool search_colon = false)
+	static char* trim_line(char* line, bool search_colon = false)
 	{
-		char *head = line;
+		char* head = line;
 
-		if (search_colon)
-		{
+		if (search_colon) {
 			head = strchr(head, ':');
 			if (!head)
 				abort("missing colon");
-			head++;
+			head ++;
 		}
 		while (*head && isspace(*head))
-			head++;
-		char *tail = head + strlen(head) - 1;
+			head ++;
+		char* tail = head + strlen(head) - 1;
 		while (tail >= head && isspace(*tail))
 			*tail-- = 0;
 		return head;
 	}
 
 public:
-	static Graph *graph(std::string fname)
+	static Graph* graph(std::string fname)
 	{
 		FILE *f;
 		int size = 0;
 		char line[MAX_CHARS_LINE];
-		char *tline;
+		char* tline;
 		Point vec[MAX_NODES];
 		Weight ewt = EWT_EUC_2D;
-
+	
 		_linenum = 0;
 		_filename = fname;
 
@@ -136,51 +124,42 @@ public:
 		if (!f)
 			abort(fname.c_str(), errno);
 
-		while (1)
-		{
-			fgets(line, MAX_CHARS_LINE - 1, f);
+		while (1) {
+			fgets(line, MAX_CHARS_LINE-1, f);
 			tline = trim_line(line);
-			_linenum++;
-			if (!strncmp("DIMENSION", tline, 9))
-			{
+			_linenum ++;
+			if (!strncmp("DIMENSION", tline, 9)) {
 				size = scan_size(tline);
-			}
-			else if (!strncmp("EDGE_WEIGHT_TYPE", tline, 16))
-			{
+			} else if (!strncmp("EDGE_WEIGHT_TYPE", tline, 16)) {
 				ewt = scan_weight(tline);
-			}
-			else if (!strncmp("NODE_COORD_SECTION", line, 18))
+			} else if (!strncmp("NODE_COORD_SECTION", line, 18))
 				break;
 			if (feof(f))
 				abort(fname.c_str(), errno);
 		}
-		for (int i = 0; i < size; i++)
-		{
-			fgets(line, MAX_CHARS_LINE - 1, f);
+		for (int i=0; i<size; i++) {
+			fgets(line, MAX_CHARS_LINE-1, f);
 			tline = trim_line(line);
-			_linenum++;
+			_linenum ++;
 			vec[i] = scan_point(tline, i);
 		}
 		fclose(f);
 
-		Graph *g = new Graph(size);
-		for (int i = 0; i < size; i++)
-		{
+		Graph* g = new Graph(size);
+		for (int i=0; i<size; i++) {
 			g->add(vec[i].x, vec[i].y);
 			g->sdistance(i, i) = 0;
-			for (int j = 0; j < i; j++)
-			{
+			for (int j=0; j<i; j++) {
 				int dist = 0;
-				switch (ewt)
-				{
-				case EWT_GEO:
-					dist = lldist(vec[i].x, vec[i].y, vec[j].x, vec[j].y);
-					break;
-				case EWT_EUC_2D:
-					dist = sqdist(vec[i].x, vec[i].y, vec[j].x, vec[j].y);
-					break;
-				case EWT_ERR:
-					abort("wrong EDGE_WEIGHT_TYPE parameter");
+				switch (ewt) {
+					case EWT_GEO:
+						dist = lldist(vec[i].x, vec[i].y, vec[j].x, vec[j].y);
+						break;
+					case EWT_EUC_2D:
+						dist = sqdist(vec[i].x, vec[i].y, vec[j].x, vec[j].y);
+						break;
+					case EWT_ERR:
+						abort("wrong EDGE_WEIGHT_TYPE parameter");
 				}
 				g->sdistance(j, i) = g->sdistance(i, j) = dist;
 			}
@@ -188,6 +167,7 @@ public:
 
 		return g;
 	}
+
 };
 
 int TSPFile::_linenum;

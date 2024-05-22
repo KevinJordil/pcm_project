@@ -23,12 +23,20 @@ public:
 	Path(Graph* graph) : _size(0), _distance(0), _nodes{}, _graph(graph) {}
 
 	Path(Path const& o) {
-		_graph = o._graph;
-		_size = o._size;
-		_distance = o._distance;
+		*this = o;
+	}
 
-		for (size_t i = 0; i < _size; i++)
-			_nodes[i] = o._nodes[i];
+	Path& operator=(Path const& o) {
+		if (this != &o) {
+			_graph = o._graph;
+			_size = o._size;
+			_distance = o._distance;
+
+			for (size_t i = 0; i < _size; i++)
+				_nodes[i] = o._nodes[i];
+		}
+
+		return *this;
 	}
 
 	size_t max() const { return _graph->size(); }
@@ -55,7 +63,7 @@ public:
 			if (_size) {
 				node_t node = _nodes[_size - 1];
 				dist_t distance = _graph->distance(node, last);
-				distance -= distance;
+				_distance -= distance;
 			}
 		}
 	}
@@ -71,7 +79,7 @@ public:
 	void print(std::ostream& os) const {
 		os << '[' << _distance;
 		for (size_t i = 0; i < _size; i++)
-			os << (i ? ',' : ':') << ' ' << _nodes[i];
+			os << (i ? ',' : ':') << ' ' << (unsigned) _nodes[i];
 		os << ']';
 	}
 };
