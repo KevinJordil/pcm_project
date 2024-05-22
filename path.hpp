@@ -10,6 +10,7 @@
 
 #include "graph.hpp"
 #include <iostream>
+#include <bitset>
 #include "settings.hpp"
 
 class Path {
@@ -17,10 +18,11 @@ private:
 	size_t _size;
 	dist_t _distance;
 	node_t _nodes[TSP_MAX_NODES]; // OPTI: nodes are stored statically in a Path
+	std::bitset<32> _contained_nodes;
 	Graph* _graph;
 
 public:
-	Path(Graph* graph) : _size(0), _distance(0), _nodes{}, _graph(graph) {}
+	Path(Graph* graph) : _size(0), _distance(0), _nodes{}, _contained_nodes(0), _graph(graph) {}
 
 	Path(Path const& o) {
 		*this = o;
@@ -31,6 +33,7 @@ public:
 			_graph = o._graph;
 			_size = o._size;
 			_distance = o._distance;
+			_contained_nodes = o._contained_nodes;
 
 			for (size_t i = 0; i < _size; i++)
 				_nodes[i] = o._nodes[i];
@@ -53,12 +56,14 @@ public:
 			}
 
 			_nodes[_size++] = node;
+			_contained_nodes.set(node);
 		}
 	}
 
 	void pop() {
 		if (_size) {
 			node_t last = _nodes[--_size];
+			_contained_nodes.reset(last);
 
 			if (_size) {
 				node_t node = _nodes[_size - 1];
@@ -69,17 +74,13 @@ public:
 	}
 
 	bool contains(node_t node) const {
-		// TODO: bitmap
-		for (size_t i = 0; i < _size; i++)
-			if (_nodes[i] == node)
-				return true;
-		return false;
+		return _contained_nodes[node];
 	}
 
 	void print(std::ostream& os) const {
 		os << '[' << _distance;
 		for (size_t i = 0; i < _size; i++)
-			os << (i ? ',' : ':') << ' ' << (unsigned) _nodes[i];
+			os << (i ? ',' : ':') << ' ' << (unsigned)_nodes[i];
 		os << ']';
 	}
 };

@@ -59,7 +59,7 @@ void tsp_worker(ThreadParams* params) {
 void sequential_bnb(Path* current, Path* shortest, dist_t* shortest_distance) {
     if (current->leaf()) {
         // this is a leaf
-        current->add(0);
+        current->add(TSP_STARTING_CITY);
         if (current->distance() < *shortest_distance) {
             *shortest = *current;
             *shortest_distance = shortest->distance();
@@ -68,7 +68,6 @@ void sequential_bnb(Path* current, Path* shortest, dist_t* shortest_distance) {
     }
     else {
         if (current->distance() < *shortest_distance) {
-            // continue branching
             for (node_t i = 1; i < current->max(); i++) {
                 if (!current->contains(i)) {
                     current->add(i);
