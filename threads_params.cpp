@@ -4,7 +4,7 @@
 #include "settings.hpp"
 #include "tools.hpp"
 
-ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue) : shortest_path(nullptr), TOTAL_PATHS(factorial(graph->size() - 1))
+ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue) : shortest_path(new Path()), TOTAL_PATHS(factorial(graph->size() - 1))
 {
     this->graph = graph;
     this->queue = queue;

@@ -7,7 +7,7 @@
 
 using namespace std::literals::chrono_literals;
 
-void sequential_bnb(Path* current, Path* shortest, dist_t* shortest_distance);
+void sequential_bnb(Path* current, Path* shortest);
 
 void tsp_worker(ThreadParams* params) {
     while (true) {
@@ -25,11 +25,10 @@ void tsp_worker(ThreadParams* params) {
 
         // Branch is deep enough to traverse sequentially
         if (branch->max() - branch->size() <= TSP_SEQUENTIAL_DEPTH) {
-            Path local_shortest(nullptr);
-            dist_t local_shortest_distance = params->shortest_distance();
-            sequential_bnb(branch, &local_shortest, &local_shortest_distance);
+            Path local_shortest(*params->get_shortest_path());
+            sequential_bnb(branch, &local_shortest);
 
-            if (local_shortest_distance < params->shortest_distance())
+            if (local_shortest.distance() < params->shortest_distance())
                 // TODO: Fix memory leak of old shortest 
                 params->set_shortest_path(new Path(local_shortest));
 
@@ -56,22 +55,20 @@ void tsp_worker(ThreadParams* params) {
     }
 }
 
-void sequential_bnb(Path* current, Path* shortest, dist_t* shortest_distance) {
+void sequential_bnb(Path* current, Path* shortest) {
     if (current->leaf()) {
         // this is a leaf
         current->add(TSP_STARTING_CITY);
-        if (current->distance() < *shortest_distance) {
+        if (current->distance() < shortest->distance())
             *shortest = *current;
-            *shortest_distance = shortest->distance();
-        }
         current->pop();
     }
     else {
-        if (current->distance() < *shortest_distance) {
+        if (current->distance() < shortest->distance()) {
             for (node_t i = 1; i < current->max(); i++) {
                 if (!current->contains(i)) {
                     current->add(i);
-                    sequential_bnb(current, shortest, shortest_distance);
+                    sequential_bnb(current, shortest);
                     current->pop();
                 }
             }

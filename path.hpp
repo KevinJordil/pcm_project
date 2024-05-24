@@ -22,7 +22,9 @@ private:
 	Graph* _graph;
 
 public:
-	Path(Graph* graph) : _size(0), _distance(0), _nodes{}, _contained_nodes(0), _graph(graph) {}
+	Path() : _size(0), _distance(UINT64_MAX), _nodes{}, _contained_nodes(), _graph(nullptr) {}
+
+	Path(Graph* graph) : _size(0), _distance(0), _nodes{}, _contained_nodes(), _graph(graph) {}
 
 	Path(Path const& o) {
 		*this = o;
