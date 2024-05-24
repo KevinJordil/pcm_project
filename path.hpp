@@ -49,7 +49,7 @@ public:
 	size_t missing() const { return max() - _size; }
 	bool leaf() const { return (_size == max()); }
 	dist_t distance() const { return _distance; }
-	dist_t forecast_distance() const { return _distance + _graph->min_distance() * missing(); }
+	dist_t forecast_distance() const { return _distance + _graph->min_distance(missing()); }
 
 
 

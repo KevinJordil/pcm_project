@@ -14,13 +14,13 @@
 #include <cmath>
 #include <cerrno>
 #include <cstring>
+#include <numeric>
 
 #include "graph.hpp"
 
 class TSPFile
 {
 private:
-	static const int MAX_NODES = 100;
 	static const int MAX_CHARS_LINE = 1000;
 
 	enum Weight
@@ -72,7 +72,7 @@ private:
 		int size = 0;
 		line = trim_line(line, true);
 		sscanf(line, "%d", &size);
-		if (size > MAX_NODES)
+		if (size > TSP_MAX_NODES)
 			abort("too many points in input");
 		if (size < 1)
 			abort("wrong size in input");
@@ -130,7 +130,7 @@ public:
 		int size = 0;
 		char line[MAX_CHARS_LINE];
 		char* tline;
-		Point vec[MAX_NODES];
+		Point vec[TSP_MAX_NODES];
 		Weight ewt = EWT_EUC_2D;
 
 		_linenum = 0;
@@ -168,8 +168,10 @@ public:
 		fclose(f);
 
 		Graph* g = new Graph(size);
-		for (int i = 0; i < size; i++)
-		{
+		dist_t flat_distances[size * (size + 1) / 2];
+		size_t distances_counter = 0;
+
+		for (int i = 0; i < size; i++) {
 			g->add(vec[i].x, vec[i].y);
 			g->sdistance(i, i) = 0;
 			for (int j = 0; j < i; j++)
@@ -186,10 +188,13 @@ public:
 				case EWT_ERR:
 					abort("wrong EDGE_WEIGHT_TYPE parameter");
 				}
-				g->sdistance(j, i) = g->sdistance(i, j) = dist;
-				g->smin_distance() = std::min(dist, g->smin_distance());
+				g->sdistance(j, i) = g->sdistance(i, j) = flat_distances[distances_counter++] = dist;
 			}
 		}
+
+		std::sort(flat_distances, flat_distances + distances_counter);
+		for (size_t i = 0; i < size; i++)
+			g->smin_distances()[i] = std::accumulate(flat_distances, flat_distances + (i > distances_counter ? distances_counter : i), 0);
 
 		return g;
 	}

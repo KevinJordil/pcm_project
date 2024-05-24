@@ -18,19 +18,18 @@ private:
 	size_t _max_size;
 	size_t _size;
 	dist_t* _distances;
-	dist_t _min_distance;
+	dist_t _min_distances[TSP_MAX_NODES];
 	size_t* _x;
 	size_t* _y;
 
 public:
-	Graph(size_t size)
+	Graph(size_t size) : _min_distances{}
 	{
 		_max_size = size;
 		_distances = new size_t[size * size];
 		for (size_t i = 0; i < size; i++)
 			for (size_t j = 0; j < size; j++)
 				sdistance(i, j) = -1;
-		_min_distance = UINT64_MAX;
 		_x = new size_t[size];
 		_y = new size_t[size];
 		_size = 0;
@@ -41,16 +40,15 @@ public:
 		delete[] _x;
 		delete[] _y;
 		delete[] _distances;
-		_x = _y = _distances = 0;
-		_max_size = 0;
 	}
 
 	size_t size() const { return _size; }
 	dist_t distance(node_t i, node_t j) const { return _distances[i + _max_size * j]; }
 	dist_t& sdistance(node_t i, node_t j) { return _distances[i + _max_size * j]; }
-	dist_t min_distance() const { return _min_distance; }
-	dist_t& smin_distance() { return _min_distance; }
-	size_t add(int x, int y)
+	dist_t min_distance(size_t i) const { return _min_distances[i]; }
+	dist_t(&smin_distances())[TSP_MAX_NODES] { return _min_distances; }
+
+		size_t add(int x, int y)
 	{
 		_x[_size] = x;
 		_y[_size] = y;
