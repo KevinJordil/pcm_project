@@ -7,7 +7,7 @@
 
 using namespace std::literals::chrono_literals;
 
-void sequential_bnb(Path* current, Path* shortest);
+void sequential_bnb(Path* current, Path* shortest, ThreadParams* params);
 
 void tsp_worker(ThreadParams* params) {
     while (true) {
@@ -26,7 +26,7 @@ void tsp_worker(ThreadParams* params) {
         // Branch is deep enough to traverse sequentially
         if (branch->missing() <= TSP_SEQUENTIAL_DEPTH) {
             Path local_shortest(*params->get_shortest_path());
-            sequential_bnb(branch, &local_shortest);
+            sequential_bnb(branch, &local_shortest, params);
 
             if (local_shortest.distance() < params->shortest_distance())
                 // TODO: Fix memory leak of old shortest 
@@ -55,12 +55,16 @@ void tsp_worker(ThreadParams* params) {
     }
 }
 
-void sequential_bnb(Path* current, Path* shortest) {
+void sequential_bnb(Path* current, Path* shortest, ThreadParams* params) {
     // Path is finished, tiem to evaluate
     if (current->leaf()) {
         current->add(TSP_STARTING_CITY);
-        if (current->distance() < shortest->distance())
+        if (current->distance() < shortest->distance()){
             *shortest = *current;
+            // If the difference is 1.2 times the current shortest, store globally
+            if (shortest->distance() * 1.2 < shortest->distance())
+                params->set_shortest_path(new Path(*shortest));
+        }
         current->pop();
     }
 
@@ -69,7 +73,7 @@ void sequential_bnb(Path* current, Path* shortest) {
         for (node_t i = 1; i < current->max(); i++) {
             if (!current->contains(i)) {
                 current->add(i);
-                sequential_bnb(current, shortest);
+                sequential_bnb(current, shortest, params);
                 current->pop();
             }
         }
