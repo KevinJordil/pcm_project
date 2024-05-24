@@ -187,6 +187,7 @@ public:
 					abort("wrong EDGE_WEIGHT_TYPE parameter");
 				}
 				g->sdistance(j, i) = g->sdistance(i, j) = dist;
+				g->smin_distance() = std::min(dist, g->smin_distance());
 			}
 		}
 

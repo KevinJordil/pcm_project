@@ -46,8 +46,12 @@ public:
 
 	size_t max() const { return _graph->size(); }
 	size_t size() const { return _size; }
+	size_t missing() const { return max() - _size; }
 	bool leaf() const { return (_size == max()); }
 	dist_t distance() const { return _distance; }
+	dist_t forecast_distance() const { return _distance + _graph->min_distance() * missing(); }
+
+
 
 	void add(node_t node) {
 		if (_size <= max()) {

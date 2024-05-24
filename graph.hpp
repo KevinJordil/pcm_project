@@ -18,6 +18,7 @@ private:
 	size_t _max_size;
 	size_t _size;
 	dist_t* _distances;
+	dist_t _min_distance;
 	size_t* _x;
 	size_t* _y;
 
@@ -29,6 +30,7 @@ public:
 		for (size_t i = 0; i < size; i++)
 			for (size_t j = 0; j < size; j++)
 				sdistance(i, j) = -1;
+		_min_distance = UINT64_MAX;
 		_x = new size_t[size];
 		_y = new size_t[size];
 		_size = 0;
@@ -46,6 +48,8 @@ public:
 	size_t size() const { return _size; }
 	dist_t distance(node_t i, node_t j) const { return _distances[i + _max_size * j]; }
 	dist_t& sdistance(node_t i, node_t j) { return _distances[i + _max_size * j]; }
+	dist_t min_distance() const { return _min_distance; }
+	dist_t& smin_distance() { return _min_distance; }
 	size_t add(int x, int y)
 	{
 		_x[_size] = x;

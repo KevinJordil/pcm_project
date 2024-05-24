@@ -24,7 +24,7 @@ void tsp_worker(ThreadParams* params) {
         } while (!branch);
 
         // Branch is deep enough to traverse sequentially
-        if (branch->max() - branch->size() <= TSP_SEQUENTIAL_DEPTH) {
+        if (branch->missing() <= TSP_SEQUENTIAL_DEPTH) {
             Path local_shortest(*params->get_shortest_path());
             sequential_bnb(branch, &local_shortest);
 
@@ -32,7 +32,7 @@ void tsp_worker(ThreadParams* params) {
                 // TODO: Fix memory leak of old shortest 
                 params->set_shortest_path(new Path(local_shortest));
 
-            params->decrement_paths_left(factorial(branch->max() - branch->size()));
+            params->decrement_paths_left(factorial(branch->missing()));
         }
 
         // Otherwise, create sub-branches for other threads to explore later
@@ -41,10 +41,10 @@ void tsp_worker(ThreadParams* params) {
                 if (!branch->contains(n)) {
                     branch->add(n);
 
-                    if (branch->distance() < params->shortest_distance())
+                    if (branch->forecast_distance() < params->shortest_distance())
                         params->publish_branch(new Path(*branch));
                     else
-                        params->decrement_paths_left(factorial(branch->max() - branch->size()));
+                        params->decrement_paths_left(factorial(branch->missing()));
 
                     branch->pop();
                 }
@@ -65,7 +65,7 @@ void sequential_bnb(Path* current, Path* shortest) {
     }
 
     // Path still needs exploring, but seems promising
-    else if (current->distance() < shortest->distance()) {
+    else if (current->forecast_distance() < shortest->distance()) {
         for (node_t i = 1; i < current->max(); i++) {
             if (!current->contains(i)) {
                 current->add(i);
