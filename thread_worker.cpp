@@ -56,25 +56,22 @@ void tsp_worker(ThreadParams* params) {
 }
 
 void sequential_bnb(Path* current, Path* shortest) {
+    // Path is finished, tiem to evaluate
     if (current->leaf()) {
-        // this is a leaf
         current->add(TSP_STARTING_CITY);
         if (current->distance() < shortest->distance())
             *shortest = *current;
         current->pop();
     }
-    else {
-        if (current->distance() < shortest->distance()) {
-            for (node_t i = 1; i < current->max(); i++) {
-                if (!current->contains(i)) {
-                    current->add(i);
-                    sequential_bnb(current, shortest);
-                    current->pop();
-                }
+
+    // Path still needs exploring, but seems promising
+    else if (current->distance() < shortest->distance()) {
+        for (node_t i = 1; i < current->max(); i++) {
+            if (!current->contains(i)) {
+                current->add(i);
+                sequential_bnb(current, shortest);
+                current->pop();
             }
-        }
-        else {
-            // current already >= shortest known so far, bound
         }
     }
 }
