@@ -2,13 +2,14 @@
 #define _tools_hpp
 
 #include <cstddef>
+#include "settings.hpp"
 
 
 /**
  * @brief Factorial of a number
  *
  */
-size_t factorial(size_t i);
+extern const size_t factorial[TSP_MAX_NODES];
 
 
 #endif // _tools_hpp

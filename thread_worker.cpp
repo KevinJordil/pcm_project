@@ -32,7 +32,7 @@ void tsp_worker(ThreadParams* params) {
                 // TODO: Fix memory leak of old shortest 
                 params->set_shortest_path(new Path(local_shortest));
 
-            params->decrement_paths_left(factorial(branch->missing()));
+            params->decrement_paths_left(factorial[branch->missing()]);
         }
 
         // Otherwise, create sub-branches for other threads to explore later
@@ -44,7 +44,7 @@ void tsp_worker(ThreadParams* params) {
                     if (branch->forecast_distance() < params->shortest_distance())
                         params->publish_branch(new Path(*branch));
                     else
-                        params->decrement_paths_left(factorial(branch->missing()));
+                        params->decrement_paths_left(factorial[branch->missing()]);
 
                     branch->pop();
                 }

@@ -1,15 +1,25 @@
 #include "tools.hpp"
-#include "settings.hpp"
 
-size_t factorial(size_t i) {
-    static size_t cache[TSP_MAX_NODES] = {};
 
-    if (!cache[i]) {
-        size_t t = 1;
-        for (size_t f = 2; f <= i; f++)
-            t *= f;
-        cache[i] = t;
-    }
-
-    return cache[i];
-}
+const size_t factorial[TSP_MAX_NODES] = {
+    1,
+    1,
+    2,
+    6,
+    24,
+    120,
+    720,
+    5040,
+    40320,
+    362880,
+    3628800,
+    39916800,
+    479001600,
+    6227020800,
+    87178291200,
+    1307674368000,
+    20922789888000,
+    355687428096000,
+    6402373705728000,
+    121645100408832000
+};

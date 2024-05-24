@@ -4,14 +4,14 @@
 #include "settings.hpp"
 #include "tools.hpp"
 
-ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue) : shortest_path(new Path()), TOTAL_PATHS(factorial(graph->size() - 1))
+ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue) : shortest_path(new Path()), TOTAL_PATHS(factorial[graph->size() - 1])
 {
     this->graph = graph;
     this->queue = queue;
     if (graph->size() >= TSP_MAX_NODES)
         throw "Graphs must contain less than 20 edges";
 
-    size_t paths_left = factorial(graph->size() - 1);
+    size_t paths_left = factorial[graph->size() - 1];
     this->paths_left = paths_left;
 }
 
