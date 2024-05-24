@@ -61,7 +61,7 @@ void sequential_bnb(Path* current, Path* shortest, ThreadParams* params) {
         current->add(TSP_STARTING_CITY);
         if (current->distance() < shortest->distance()){
             params->set_shortest_path(new Path(*current));
-            *shortest = params->get_shortest_path();
+            *shortest = *params->get_shortest_path();
         }
         current->pop();
     }
