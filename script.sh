@@ -20,9 +20,13 @@ for ((i = START_ITERATION; i <= END_ITERATIONS; i++)); do
 
     echo "Iteration $i" >> "$LOG_FILE"
 
-    ./main "$TSP_FILE" "$i" >> "$LOG_FILE" 2>&1
+    for ((j = 0; j < 10; j++)); do
 
-    wait $!
+        ./main "$TSP_FILE" "$i" >> "$LOG_FILE" 2>&1
+
+        wait $!
+
+    done
 
     echo "Iteration $i done" >> "$LOG_FILE"
 
