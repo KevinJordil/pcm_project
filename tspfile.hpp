@@ -15,6 +15,7 @@
 #include <cerrno>
 #include <cstring>
 #include <numeric>
+#include <algorithm>
 
 #include "graph.hpp"
 

@@ -2,12 +2,14 @@
 #include <iomanip>
 #include <iostream>
 #include <thread>
+#include <vector>
 #include <numeric>
 #include <chrono>
-#include <stdio.h>
-#include <inttypes.h>
+#include <cstdio>
+#include <cinttypes>
 
 #include "thread_worker.hpp"
+#include "threads_params.hpp"
 #include "tspfile.hpp"
 #include "concurrentqueue.hpp"
 
@@ -28,18 +30,16 @@ int main(int argc, char* argv[])
     Graph* graph = TSPFile::graph(fname);
     Path* path = new Path(graph);
     path->add(TSP_STARTING_CITY);
-    
-    moodycamel::ConcurrentQueue<Path*> queue;
-    queue.push(path);
 
-    ThreadParams params(graph, &queue);
+    ThreadParams<TSP_NUMBER_OF_QUEUES> params(graph);
+    params.publish_branch(path, 0);
     std::vector<std::thread> threads;
     threads.reserve(num_threads);
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < num_threads; i++)
-        threads.emplace_back(tsp_worker, &params);
+    for (size_t i = 0; i < num_threads; i++)
+        threads.emplace_back(tsp_worker<TSP_NUMBER_OF_QUEUES>, &params, i);
 
     for (int i = 0; i < num_threads; i++)
         threads[i].join();
