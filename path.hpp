@@ -13,18 +13,21 @@
 #include <bitset>
 #include "settings.hpp"
 
+
+static Graph* global_graph;
+
 class Path {
 private:
 	size_t _size;
 	dist_t _distance;
 	node_t _nodes[TSP_MAX_NODES]; // OPTI: nodes are stored statically in a Path
 	std::bitset<32> _contained_nodes;
-	Graph* _graph;
 
 public:
-	Path() : _size(0), _distance(UINT64_MAX), _nodes{}, _contained_nodes(), _graph(nullptr) {}
 
-	Path(Graph* graph) : _size(0), _distance(0), _nodes{}, _contained_nodes(), _graph(graph) {}
+	Path() : Path(0) {}
+
+	Path(dist_t dist) : _size(0), _distance(dist), _nodes{}, _contained_nodes() {}
 
 	Path(Path const& o) {
 		*this = o;
@@ -32,7 +35,6 @@ public:
 
 	Path& operator=(Path const& o) {
 		if (this != &o) {
-			_graph = o._graph;
 			_size = o._size;
 			_distance = o._distance;
 			_contained_nodes = o._contained_nodes;
@@ -44,12 +46,12 @@ public:
 		return *this;
 	}
 
-	size_t max() const { return _graph->size(); }
+	size_t max() const { return global_graph->size(); }
 	size_t size() const { return _size; }
 	size_t missing() const { return max() - _size; }
 	bool leaf() const { return (_size == max()); }
 	dist_t distance() const { return _distance; }
-	dist_t forecast_distance() const { return _distance + _graph->min_distance(missing()); }
+	dist_t forecast_distance() const { return _distance + global_graph->min_distance(missing()); }
 
 
 
@@ -57,7 +59,7 @@ public:
 		if (_size <= max()) {
 			if (_size) {
 				node_t last = _nodes[_size - 1];
-				dist_t distance = _graph->distance(last, node);
+				dist_t distance = global_graph->distance(last, node);
 				_distance += distance;
 			}
 
@@ -73,7 +75,7 @@ public:
 
 			if (_size) {
 				node_t node = _nodes[_size - 1];
-				dist_t distance = _graph->distance(node, last);
+				dist_t distance = global_graph->distance(node, last);
 				_distance -= distance;
 			}
 		}

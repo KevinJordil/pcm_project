@@ -14,7 +14,7 @@ public:
     ThreadParams(Graph* graph) :
         graph(graph),
         paths_left(factorial[graph->size() - 1]),
-        shortest_path(new Path()),
+        shortest_path(new Path(UINT64_MAX)),
         queues(),
         TOTAL_PATHS(factorial[graph->size() - 1]) {
         if (graph->size() >= TSP_MAX_NODES)

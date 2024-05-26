@@ -10,7 +10,7 @@ typedef uint8_t node_t;
 #define TSP_MAX_NODES 20
 #define TSP_STARTING_CITY 0
 #define TSP_SEQUENTIAL_DEPTH 10
-#define TSP_NUMBER_OF_QUEUES 4
+#define TSP_NUMBER_OF_QUEUES 1
 
 
 #endif

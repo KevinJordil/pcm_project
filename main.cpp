@@ -12,6 +12,7 @@
 #include "threads_params.hpp"
 #include "tspfile.hpp"
 #include "concurrentqueue.hpp"
+#include "path.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -28,7 +29,8 @@ int main(int argc, char* argv[])
     }
 
     Graph* graph = TSPFile::graph(fname);
-    Path* path = new Path(graph);
+    global_graph = graph;
+    Path* path = new Path();
     path->add(TSP_STARTING_CITY);
 
     ThreadParams<TSP_NUMBER_OF_QUEUES> params(graph);
