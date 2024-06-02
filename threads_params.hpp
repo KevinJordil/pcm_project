@@ -10,7 +10,9 @@
 class ThreadParams
 {
 public:
-    ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue);
+    ThreadParams(Graph* graph);
+
+    ~ThreadParams();
 
     /**
      * @brief Get the paths left
@@ -72,7 +74,8 @@ private:
     Graph* graph;
     std::atomic<size_t> paths_left;
     std::atomic<Path*> shortest_path;
-    moodycamel::ConcurrentQueue<Path*>* queue;
+    moodycamel::ConcurrentQueue<Path*> previous_shortest_paths;
+    moodycamel::ConcurrentQueue<Path*> queue;
     const size_t TOTAL_PATHS;
 };
 

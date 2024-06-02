@@ -4,25 +4,29 @@
 #include "settings.hpp"
 #include "tools.hpp"
 
-ThreadParams::ThreadParams(Graph* graph, moodycamel::ConcurrentQueue<Path*>* queue) : shortest_path(new Path()), TOTAL_PATHS(factorial[graph->size() - 1])
-{
-    this->graph = graph;
-    this->queue = queue;
+ThreadParams::ThreadParams(Graph* graph) :
+    graph(graph),
+    paths_left(factorial[graph->size() - 1]),
+    shortest_path(new Path()),
+    queue(),
+    TOTAL_PATHS(factorial[graph->size() - 1]) {
     if (graph->size() >= TSP_MAX_NODES)
         throw "Graphs must contain less than 20 edges";
-
-    size_t paths_left = factorial[graph->size() - 1];
-    this->paths_left = paths_left;
 }
 
-uint64_t ThreadParams::get_paths_left()
-{
-    return this->paths_left;
+ThreadParams::~ThreadParams() {
+    delete shortest_path.load();
+    Path* path = nullptr;
+    while (previous_shortest_paths.try_pop(path))
+        delete path;
 }
 
-Path* ThreadParams::get_shortest_path()
-{
-    return this->shortest_path;
+uint64_t ThreadParams::get_paths_left() {
+    return paths_left;
+}
+
+Path* ThreadParams::get_shortest_path() {
+    return shortest_path;
 }
 
 void ThreadParams::set_shortest_path(Path* path) {
@@ -30,12 +34,14 @@ void ThreadParams::set_shortest_path(Path* path) {
     Path* desired;
 
     do {
-        expected = this->shortest_path.load();
+        expected = shortest_path.load();
         desired = path;
 
         // Stop trying to update if a better path appeared
-        if (expected != nullptr && expected->distance() < desired->distance()) break;
-    } while (!this->shortest_path.compare_exchange_weak(expected, desired));
+        if (expected->distance() < desired->distance()) return;
+    } while (!shortest_path.compare_exchange_weak(expected, desired));
+
+    previous_shortest_paths.push(expected);
 }
 
 void ThreadParams::decrement_paths_left(size_t paths) {
@@ -43,24 +49,24 @@ void ThreadParams::decrement_paths_left(size_t paths) {
     size_t desired;
 
     do {
-        expected = this->paths_left.load();
+        expected = paths_left.load();
         desired = expected - paths;
-    } while (!this->paths_left.compare_exchange_weak(expected, desired));
+    } while (!paths_left.compare_exchange_weak(expected, desired));
 }
 
 Path* ThreadParams::fetch_branch() {
     Path* path = nullptr;
-    this->queue->try_pop(path);
+    queue.try_pop(path);
 
     return path;
 }
 
 void ThreadParams::publish_branch(Path* path) {
-    this->queue->push(path);
+    queue.push(path);
 }
 
 dist_t ThreadParams::shortest_distance() {
-    Path* path = this->shortest_path.load();
+    Path* path = shortest_path.load();
     if (path == nullptr)
         return UINT64_MAX;
 

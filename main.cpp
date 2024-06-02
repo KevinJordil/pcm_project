@@ -28,11 +28,9 @@ int main(int argc, char* argv[])
     Graph* graph = TSPFile::graph(fname);
     Path* path = new Path(graph);
     path->add(TSP_STARTING_CITY);
-    
-    moodycamel::ConcurrentQueue<Path*> queue;
-    queue.push(path);
 
-    ThreadParams params(graph, &queue);
+    ThreadParams params(graph);
+    params.publish_branch(path);
     std::vector<std::thread> threads;
     threads.reserve(num_threads);
 
