@@ -29,7 +29,6 @@ void tsp_worker(ThreadParams* params) {
             sequential_bnb(branch, &local_shortest, params);
 
             if (local_shortest.distance() < params->shortest_distance())
-                // TODO: Fix memory leak of old shortest 
                 params->set_shortest_path(new Path(local_shortest));
 
             params->decrement_paths_left(factorial[branch->missing()]);
@@ -56,10 +55,10 @@ void tsp_worker(ThreadParams* params) {
 }
 
 void sequential_bnb(Path* current, Path* shortest, ThreadParams* params) {
-    // Path is finished, tiem to evaluate
+    // Path is finished, time to evaluate
     if (current->leaf()) {
         current->add(TSP_STARTING_CITY);
-        if (current->distance() < shortest->distance()){
+        if (current->distance() < shortest->distance()) {
             params->set_shortest_path(new Path(*current));
             *shortest = *params->get_shortest_path();
         }
@@ -76,4 +75,7 @@ void sequential_bnb(Path* current, Path* shortest, ThreadParams* params) {
             }
         }
     }
+
+    // Path is not worth exploring, silently drop it
+    else {}
 }
